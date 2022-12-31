@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,40 +11,40 @@ use Throwable;
 class UserController extends Controller
 {
     /**
-     * /api/users
+     * [GET] /api/users
      * @return JsonResponse
      * Retourne la liste des utilisateurs
      */
     public function index(): JsonResponse {
-        return response()->json(User::all());
+        return response()->json(User::all()); // Retourne la liste des utilisateurs
     }
 
+    /**
+     * [POST] /api/users
+     * @param Request $request
+     * Contient les différents champs de l'utilisateur à créer
+     * @return JsonResponse
+     * Retourne le nouvel utilisateur créé
+     */
     public function store(Request $request): JsonResponse {
-        $login = $request->input('login');
-        $description = $request->input('description');
-        $birth = $request->input('birth');
-        $idAvatar = $request->input('idAvatar');
-        $password = $request->input('password');
-        $email = $request->input('email');
-        $firstname = $request->input('firstname');
-        $lastname = $request->input('lastname');
-        if(!$login || !$password || !$birth || !$email) {
-            return response()->json("La requete doit contenir les champs login, birth, password et email", Response::HTTP_BAD_REQUEST);
-        }
-        $user = new User();
-        $user->login = $login;
-        $user->description = $description;
-        $user->birth = date('Y-m-d',strtotime($birth));
-        $user->idAvatar = $idAvatar;
-        $user->password = password_hash($password, PASSWORD_DEFAULT);
-        $user->email = $email;
-        $user->firstname = $firstname;
-        $user->lastname = $lastname;
+        $requiredFields = ['login', 'password', 'birth', 'email']; // Liste des champs obligatoires de la requête
+        $missingFields = array_diff($requiredFields, array_keys($request->all())); // tableau contenant la liste des champs obligatoires non renseignés danas la requête
+        if ($missingFields) // S'il manque des champs obligatoires
+            return response()->json("La requête doit contenir les champs " . implode(', ', $missingFields), Response::HTTP_BAD_REQUEST);
+        $user = new User(); // Création de l'utilisateur avec les champs renseignés dans la requête
+        $user->login = $request->input('login');
+        $user->birth = date('Y-m-d', strtotime($request->input('birth')));
+        $user->idAvatar = $request->input('idAvatar');
+        $user->password = password_hash($request->input('password'), PASSWORD_DEFAULT); // hachage du mot de passe
+        $user->email = $request->input('email');
+        $user->description = $request->input('description') ?: ""; // Champs facultatifs
+        $user->firstname = $request->input('firstname') ?: "";
+        $user->lastname = $request->input('lastname') ?: "";
         try {
-            $user->saveOrFail();
-            return response()->json($user, Response::HTTP_CREATED);
-        } catch (Throwable $e) {
-            return response()->json("Le login ou l'adresse mail est déjà présent dans la base de donnée", Response::HTTP_UNAUTHORIZED);
+            $user->saveOrFail(); // Enregistrement dans la base de donnée
+            return response()->json($user, Response::HTTP_CREATED); // Retourne l'utilisateur créé sous forme JSON
+        } catch (Throwable $e) { // L'enregistrement a échoué
+            return response()->json("Le login ou l'adresse mail est déjà présent dans la base de données", Response::HTTP_UNAUTHORIZED);
         }
     }
 }
