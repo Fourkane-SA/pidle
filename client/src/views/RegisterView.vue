@@ -56,13 +56,6 @@
           <el-button @click="submit(formRef2)"> Valider</el-button>
         </div>
       </template>
-      <template v-if="active === 2">
-        <p>TODO</p>
-        <div class="submit">
-          <el-button @click="back"> Retour</el-button>
-          <el-button disabled> Inscription</el-button>
-        </div>
-      </template>
     </div>
   </div>
 </template>
@@ -74,97 +67,101 @@ import { Vue } from 'vue-class-component'
 import {User} from '@/models/User'
 import {reactive, ref} from "vue";
 import {FormInstance, FormRules } from 'element-plus';
-
+import axios from "@/plugins/axios";
 export default class RegisterView extends Vue {
-  active: number = 0
+  active: number = 0 // l'étape actuelle de l'inscription
   user: User = new User({idAvatar: 0})
-  listId = [0,1,2,3,4,5,6,7,8,9,10,11]
+  usersList: User[] = [] // Contient la liste des utilisateurs
+  listId = [0,1,2,3,4,5,6,7,8,9,10,11] // Liste des identifiants des avatars
   formRef = ref<FormInstance>()
   formRef2 = ref<FormInstance>()
-  modelForm = reactive({
+  modelForm = reactive({ // Modèle du formulaire de l'étape 0
     login: '',
     password: '',
     confirm: '',
     email: ''
   })
-  modelForm2 = reactive({
+  modelForm2 = reactive({ // Modèle du formulaire de l'étape 1
     idAvatar: 0,
     description: '',
     birth: '',
     firstname: '',
     lastname: ''
   })
-  checkLogin = (rule: any, value: any, callback: any) => {
-    const logins = ['login1', "pseudo1"]
-    const error = logins.includes(this.modelForm.login) ? new Error("Ce nom d'utilisateur n'est pas disponible") : undefined
+
+  async mounted() { // Initialisation des variables
+    this.usersList = (await axios.get('/users')).data // Requête de l'API pour initialiser la liste des utilisateurs
+  }
+  checkLogin = (rule: any, value: any, callback: any) => { // Règles vérifiant que le nom d'utilisateur renseigné n'existe pas
+    const logins: string[] = this.usersList.map(user => user.login) // recupère la liste des noms d'utilisateurs
+    const error = logins.includes(this.modelForm.login) ? new Error("Ce nom d'utilisateur n'est pas disponible") : undefined // Crée une erreur si le nom d'utilisateur est déjà pris
     callback(error)
   }
-  verifyConfirmPassword = (rule: any, value: any, callback: any) => {
-    const { password, confirm } = this.modelForm;
+  verifyConfirmPassword = (rule: any, value: any, callback: any) => { // Régle vérifiant que le mot de passe renseigné correspond à la confirmation de mot de passe
+    const { password, confirm } = this.modelForm; // Recupère le mot de passe et sa confirmation
     if(!password || !confirm)
       callback()
-    else if(password !== confirm)
-      callback(new Error("Les deux mots de passe ne correspondent pas"))
+    else if(password !== confirm) // Si les deux champs ont été remplis et sont différents
+      callback(new Error("Les deux mots de passe ne correspondent pas")) // Affichage d'une erreur
     else
       callback()
   }
-  checkEmail = (rule: any, value: any, callback: any) => {
-    const emails = ['mail1@mail.com', "second@adress.fr"]
-    const error = emails.includes(this.modelForm.email) ? new Error("Cette adresse mail est déjà utilisée") : undefined
+  checkEmail = (rule: any, value: any, callback: any) => { // Règle vérifiant que l'adresse mail n'est pas déjà utilisée
+    const emails: string[] = this.usersList.map(user => user.email) // Récupère la liste des adresse mails
+    const error = emails.includes(this.modelForm.email) ? new Error("Cette adresse mail est déjà utilisée") : undefined // Crée une erreur si l'adresse mail est déjà pris
     callback(error)
   }
-  rules1 = reactive<FormRules>({
-    login: [
-      {required: true, message: 'Entrez un login', trigger: 'blur'},
-      {min: 6, message: "Le nom d'utilisateur doit contenir au moins 6 caractères", trigger: 'blur'},
-      {validator: this.checkLogin, trigger: 'blur'}
+  rules1 = reactive<FormRules>({ // Liste des règles du premier formulaire
+    login: [ // Règles sur le champ login
+      {required: true, message: 'Entrez un login', trigger: 'blur'}, // Vérifie que le champ n'est pas vide
+      {min: 6, message: "Le nom d'utilisateur doit contenir au moins 6 caractères", trigger: 'blur'}, // Vérifie que sa longueur est d'au moins 6 caractères
+      {validator: this.checkLogin, trigger: 'blur'} // Vérifie que le nom d'utilisateur n'est pas déjà pris
     ],
-    password: [
-      {required: true, message: 'Entrez un mot de passe', trigger: 'blur'},
-      {min: 6, message: 'Le mot de passe doit contenir au moins 6 caractères', trigger: 'blur'},
-      {validator: this.verifyConfirmPassword, trigger: 'blur'}
+    password: [ // Règles sur le mot de passe
+      {required: true, message: 'Entrez un mot de passe', trigger: 'blur'}, // Vérifie que le champ n'est pas vide
+      {min: 6, message: 'Le mot de passe doit contenir au moins 6 caractères', trigger: 'blur'}, // Vérifie que sa longueur est d'au moins 6 caractères
+      {validator: this.verifyConfirmPassword, trigger: 'blur'} // Vérifie que le mot de passe et sa confirmation sont identiques
     ],
-    confirm: [
-      {required: true, message: 'Confirmer votre mot de passe', trigger: 'blur'},
-      {min: 6, message: 'Le mot de passe doit contenir au moins 6 caractères', trigger: 'blur'},
-      {validator: this.verifyConfirmPassword, trigger: 'blur'}
+    confirm: [ // Règles sur la confirmation du mot de passe
+      {required: true, message: 'Confirmer votre mot de passe', trigger: 'blur'}, // Vérifie que le champ n'est pas vide
+      {min: 6, message: 'Le mot de passe doit contenir au moins 6 caractères', trigger: 'blur'}, // Vérifie que sa longeuur est d'au moins 6 caractères
+      {validator: this.verifyConfirmPassword, trigger: 'blur'} // Vérifie que le mot de passe et sa confirmation sont identiques
     ],
-    email: [
-      {required: true, message: 'Entrez une adresse mail', trigger: 'blur'},
-      {type: "email", message: 'Entrez une adresse mail valide', trigger: 'blur'},
-      {validator: this.checkEmail, trigger: 'blur'}
+    email: [ // Rèfles sur l'adresse mail
+      {required: true, message: 'Entrez une adresse mail', trigger: 'blur'}, // Vérifie que le champ n'est pas vide
+      {type: "email", message: 'Entrez une adresse mail valide', trigger: 'blur'}, // Vérifie que le champ a le format d'une adresse mail
+      {validator: this.checkEmail, trigger: 'blur'} // Vérifie que l'adresse mail n'est pas déjà utilisée
     ]
   })
-  rules2 = reactive<FormRules>({
-    birth: [
-      {required: true, message: 'Entrez une date de naissance', trigger: 'blur'}
+  rules2 = reactive<FormRules>({ // Règle du second formaulaire
+    birth: [ // Règle sur la date de naissance
+      {required: true, message: 'Entrez une date de naissance', trigger: 'blur'} // Vérifie que le champ n'est pas vide
     ]
   })
-
-  submit(form: FormInstance) {
+  async submit(form: FormInstance) { // Appelé lors de la soumission d'un formulaire
     if(!form) return
-    form.validate(valid => {
-      if(valid) {
-        if(this.active === 0) {
-          this.active++
-          this.user.login = this.modelForm.login
-          this.user.email = this.modelForm.email
-          this.user.password = this.modelForm.password
-        } else {
-          this.user.firstname = this.modelForm2.firstname
-          this.user.lastname = this.modelForm2.lastname
-          this.user.description = this.modelForm2.description
-          this.user.birth = this.modelForm2.birth
-          this.$router.push('/login')
-        }
+    if(await form.validate()) { // Si le formulaire est valide (toutes les règles du formulaire sont respectées).
+      if(this.active === 0) { // Si le formulaire validé est le premier
+        this.active++ // Incrémentation du numéro de formulaire actif
+        this.user.login = this.modelForm.login // Initialisation des champs du formulaire dans l'utilisateur à créer
+        this.user.email = this.modelForm.email
+        this.user.password = this.modelForm.password
+      } else {
+        this.user.firstname = this.modelForm2.firstname // Initialisation des champs du formulaire
+        this.user.lastname = this.modelForm2.lastname
+        this.user.description = this.modelForm2.description
+        this.user.birth = this.modelForm2.birth
+        const data = {...this.user} // Initialisation des données de la requête avec les attributs de l'utilisateur
+        await axios.post('/users', data) // Requête API pour créer un nouvel utilisateur
+        this.$router.push('/login') // Redirection vers la page de connexion
       }
-    })
+    }
   }
-  back() {
-    this.active--
+  back() { // Si l'utilisateur appuis sur le bouton de retour
+    this.active-- // Affichage de l'étape précédant du formulaire
   }
-  updateIdAvatar(id: number) {
-    this.user.idAvatar = id
+  updateIdAvatar(id: number) { // Si l'utilisateur clique sur un avatar
+    this.user.idAvatar = id // Mise à jour de l'id de l'avatar
   }
 }
 
