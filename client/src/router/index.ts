@@ -3,6 +3,10 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import HomeLoggedView from '../views/HomeLoggedView.vue'
+// @ts-ignore
+import LogoutView from '../views/LogoutView.vue'
+// @ts-ignore
+import ProfileView from '../views/ProfileView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,8 +26,18 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/home',
-    name: 'home',
+    name: 'homeConnected',
     component: HomeLoggedView
+  },
+  {
+    path: '/logout',
+    name: 'logout',
+    component: LogoutView
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView
   }
 ]
 

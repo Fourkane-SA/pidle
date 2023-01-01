@@ -1,5 +1,5 @@
 <template>
-  <h1>ACCUEIL CONNECTE</h1>
+  <h1>ACCUEIL CONNECTE TODO</h1>
 </template>
 
 <script lang="ts">

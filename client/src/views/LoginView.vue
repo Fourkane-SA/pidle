@@ -19,6 +19,8 @@
 import {Vue} from "vue-class-component";
 import {reactive, ref} from "vue";
 import {FormInstance, FormRules} from "element-plus";
+import axios from "@/plugins/axios";
+import router from "@/router";
 
 
 export default class LoginView extends Vue {
@@ -44,14 +46,18 @@ export default class LoginView extends Vue {
     this.errorMessage = ""
     if(await form.validate()) {
       const {login, password} = this.modelForm
-      if(login !== "fakelogin") {
+      try {
+        const token = (await axios.post('/token', {
+          login: login,
+          password: password
+        })).data
+        localStorage.setItem('token', token)
+        //location.pathname = '/home'
+        location.pathname = '/home'
+        //this.$router.push('/home')
+      } catch (e : any) {
         this.error = true
-        this.errorMessage = "Le nom d'utilisateur n'existe pas"
-      } else if(password !== "fakepassword") {
-        this.error = true
-        this.errorMessage = "le mot de passe est incorrect"
-      } else {
-        this.$router.push('/home')
+        this.errorMessage = e.response.data
       }
     }
   }
