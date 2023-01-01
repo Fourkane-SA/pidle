@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\TokenService;
 use Exception;
 use Firebase\JWT\ExpiredException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,7 +53,12 @@ class UserController extends Controller
         }
     }
 
-
-
-
+    public function show(string $login): JsonResponse {
+        try {
+            $user = User::whereLogin($login)->firstOrFail();
+            return response()->json($user);
+        } catch (ModelNotFoundException $modelNotFoundException) {
+            return response()->json("L'utilisateur n'existe pas", Response::HTTP_NOT_FOUND);
+        }
+    }
 }
