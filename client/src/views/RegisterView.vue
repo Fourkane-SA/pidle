@@ -24,17 +24,7 @@
         <el-button @click="submit(formRef)"> Suivant</el-button>
       </template>
       <template v-if="active === 1">
-        <img v-bind:src="'profiles/' + user.idAvatar + '.png'" width="100">
-        <p>Sélectionnez un avatar</p>
-        <div style="width: 600px">
-          <el-row class="profiles">
-          <el-col :span="4" v-for="id in listId">
-            <img v-bind:src="'profiles/' + id + '.png'" width="100" @click="updateIdAvatar(id)">
-          </el-col>
-        </el-row>
-        </div>
-
-        <a href="https://fr.vecteezy.com">Avatar Vecteurs par Vecteezy</a>
+        <AvatarSelector v-bind:selectedId="this.user.idAvatar" v-bind:listId="listId" v-on:update:selectedId="updateIdAvatar" />
         <el-divider />
         <el-form :label-position="'top'" :rules="rules2" ref="formRef2" :model="modelForm2">
           <el-form-item class="description" label="Description" prop="description">
@@ -62,16 +52,24 @@
 
 <script lang="ts">
 
-import { Vue } from 'vue-class-component'
+import {Options, Vue } from 'vue-class-component'
 import {User} from '@/models/User'
 import {reactive, ref} from "vue";
 import {FormInstance, FormRules } from 'element-plus';
 import axios from "@/plugins/axios";
+
+import AvatarSelector from "@/components/AvatarSelectorComponent.vue";
+
+@Options({
+  components: {
+    AvatarSelector
+  },
+})
 export default class RegisterView extends Vue {
-  active: number = 0 // l'étape actuelle de l'inscription
+  active: number = 1 // l'étape actuelle de l'inscription
   user: User = new User({idAvatar: 0})
   usersList: User[] = [] // Contient la liste des utilisateurs
-  listId = [0,1,2,3,4,5,6,7,8,9,10,11] // Liste des identifiants des avatars
+  listId = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] // Liste des identifiants des avatars
   formRef = ref<FormInstance>()
   formRef2 = ref<FormInstance>()
   modelForm = reactive({ // Modèle du formulaire de l'étape 0
@@ -171,8 +169,7 @@ h1
   color #409eff
 
 .form
-  width fit-content
-  min-width 300px
+  width 550px
   margin auto
   border groove #409eff 3px
   border-radius 1em
@@ -182,11 +179,10 @@ a
   color white
 
 .submit
-  margin-top 1em
+  display flex
+  justify-content space-between
 
 .profiles
   margin-bottom 1em
 
-.description
-  margin-top 1em
 </style>

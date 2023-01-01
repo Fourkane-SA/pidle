@@ -20,15 +20,14 @@ import {User} from "@/models/User";
 import axios from "@/plugins/axios";
 
 export default class ProfileView extends Vue {
-  user?: User = new User({idAvatar: -1})
-  async mounted() {
+  user?: User = new User({idAvatar: 0})
+  async created() {
     const login = (await axios.get('/token/whoami',{
       headers: {
         'Authorization': localStorage.getItem('token')
       }
     })).data
     this.user = (await axios.get('/users/' + login)).data
-    console.log(this.user)
   }
 }
 </script>
@@ -36,7 +35,7 @@ export default class ProfileView extends Vue {
 <style scoped lang="stylus">
 
 .headerProfile
-  border gray solid 1px
+  border #409eff solid 1px
   width 70%
   max-width 600px
   min-width 300px

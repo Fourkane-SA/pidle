@@ -7,6 +7,7 @@ import HomeLoggedView from '../views/HomeLoggedView.vue'
 import LogoutView from '../views/LogoutView.vue'
 // @ts-ignore
 import ProfileView from '../views/ProfileView.vue'
+import EditProfileView from "@/views/editProfile.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -38,6 +39,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile',
     name: 'profile',
     component: ProfileView
+  },
+  {
+    path: '/editProfile',
+    name: 'editprofile',
+    component: EditProfileView
   }
 ]
 
