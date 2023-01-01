@@ -50,7 +50,6 @@
             <el-input v-model="modelForm2.lastname" />
           </el-form-item>
         </el-form>
-
         <div class="submit">
           <el-button @click="back"> Retour</el-button>
           <el-button @click="submit(formRef2)"> Valider</el-button>
@@ -168,11 +167,14 @@ export default class RegisterView extends Vue {
 </script>
 
 <style scoped lang="stylus">
+h1
+  color #409eff
+
 .form
   width fit-content
   min-width 300px
   margin auto
-  border solid grey 1px
+  border groove #409eff 3px
   border-radius 1em
   padding 3em
 
