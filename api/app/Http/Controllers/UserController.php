@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\VerifyToken;
 use App\Models\User;
+use App\Services\TokenService;
+use Exception;
+use Firebase\JWT\ExpiredException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,4 +51,8 @@ class UserController extends Controller
             return response()->json("Le login ou l'adresse mail est déjà présent dans la base de données", Response::HTTP_UNAUTHORIZED);
         }
     }
+
+
+
+
 }

@@ -44,4 +44,6 @@ class User extends Model
     protected $fillable = ['login', 'password', 'email', 'description', 'birth', 'idAvatar', 'firstname', 'lastname'];
 
     protected $hidden = ['password'];
+
+    protected  $primaryKey = 'id';
 }
