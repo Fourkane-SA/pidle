@@ -16,6 +16,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resource('users', UserController::class);
+//Route::resource('users', UserController::class);
+
+/**
+ * UserController
+ */
+Route::get('users', [UserController::class, 'index']);
+Route::post('users', [UserController::class, 'store']);
+Route::get('users/{login}', [UserController::class, 'show']);
+Route::patch('users/{login}', [UserController::class, 'update'])->middleware('verifyToken');
+
 Route::post('token', [TokenController::class, 'generate']);
 Route::get('token/whoami', [TokenController::class, 'getLogin'])->middleware('verifyToken'); // Vérifie la validité du token
