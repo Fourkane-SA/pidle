@@ -36,6 +36,7 @@ export default class ProfileView extends Vue {
 
 .headerProfile
   border #409eff solid 1px
+  box-shadow: 4px 3px 10px #0e37ff;
   width 70%
   max-width 600px
   min-width 300px

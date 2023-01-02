@@ -11,6 +11,7 @@
     "axios": "^1.2.2",
     "core-js": "^3.8.3",
     "element-plus": "^2.2.27",
+    "konva": "^8.3.14",
     "vue": "^3.2.45",
     "vue-class-component": "^8.0.0-0",
     "vue-property-decorator": "^9.1.2",

@@ -13,7 +13,7 @@
           <el-icon class="el-input__icon"><Search /></el-icon>
         </template>
       </el-input>
-      <el-menu-item>Créer un niveau</el-menu-item>
+      <el-menu-item index="newLevel">Créer un niveau</el-menu-item>
       <el-menu-item>Favoris</el-menu-item>
       <el-menu-item>Règles</el-menu-item>
       <el-menu-item>Historique</el-menu-item>
