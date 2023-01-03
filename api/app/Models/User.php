@@ -6,13 +6,14 @@ use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\User
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $login
  * @property string $email
  * @property string $description
@@ -36,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|User wherePassword($value)
  * @method static Builder|User whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\Level|null $level
  */
 class User extends Model
 {
@@ -45,5 +47,8 @@ class User extends Model
 
     protected $hidden = ['password'];
 
-    protected  $primaryKey = 'id';
+
+    public function level() {
+        return $this->belongsTo(Level::class);
+    }
 }

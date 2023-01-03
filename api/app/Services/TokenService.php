@@ -8,6 +8,7 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
+use stdClass;
 
 class TokenService { // Classe statique permettant de générer et valider un token
     public static function generateToken(User $user): string { // Permet de générer un token
@@ -22,7 +23,10 @@ class TokenService { // Classe statique permettant de générer et valider un to
         return JWT::encode($payload, $publicKey, 'HS256'); // Retourne le token généré
     }
 
-    public static function validateToken(string $token) { // Permet de vérifier la validité d'un token
+    /**
+     * @throws Exception
+     */
+    public static function validateToken(string $token): stdClass { // Permet de vérifier la validité d'un token
         $publicKey = file_get_contents(base_path('keys/public.pem')); // Recupère la clé publique
         $key = new Key($publicKey, 'HS256'); // Création d'un objet Key avec la clé publique et l'algorithme HS256
         try {

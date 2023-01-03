@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LevelController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -28,3 +29,9 @@ Route::patch('users/{login}', [UserController::class, 'update'])->middleware('ve
 
 Route::post('token', [TokenController::class, 'generate']);
 Route::get('token/whoami', [TokenController::class, 'getLogin'])->middleware('verifyToken'); // Vérifie la validité du token
+
+Route::get('levels', [LevelController::class, 'index']);
+Route::post('levels', [LevelController::class, 'store'])->middleware('verifyToken');
+Route::get('levels/{id}', [LevelController::class, 'show']);
+Route::patch('levels/{id}', [LevelController::class, 'update'])->middleware('verifyToken');
+Route::delete('levels/{id}', [LevelController::class, 'destroy'])->middleware('verifyToken');
