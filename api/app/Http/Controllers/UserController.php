@@ -59,9 +59,9 @@ class UserController extends Controller {
      * @return JsonResponse
      * Retourne l'utilisateur
      */
-    public function show(string $login): JsonResponse { // Retourne l'utilisateur à l'aide de son login
+    public function show(int $id): JsonResponse { // Retourne l'utilisateur à l'aide de son login
         try {
-            $user = User::query()->findOrFail($login, 'login'); // Cherche l'utilisateur avec son login
+            $user = User::query()->findOrFail($id); // Cherche l'utilisateur avec son login
             return response()->json($user);
         } catch (ModelNotFoundException $modelNotFoundException) { // L'utilisateur n'a pas été trouvé
             return response()->json("L'utilisateur n'existe pas", Response::HTTP_NOT_FOUND);
@@ -77,11 +77,11 @@ class UserController extends Controller {
      * @return JsonResponse
      * Retourne l'utilisateur modifié
      */
-    public function update(string $login, Request $request): JsonResponse { // Met à jour un utilisateur (après vérification du token)
+    public function update(string $id, Request $request): JsonResponse { // Met à jour un utilisateur (après vérification du token)
         try {
-            $user = User::query()->findOrFail($login, 'login'); // Cherche l'utilisateur
+            $user = User::query()->findOrFail($id); // Cherche l'utilisateur
             $tokenLogin = TokenService::getLogin($request); // Recupère le login enregistré dans le token
-            if($tokenLogin !== $login) // Si le propriétaire du token n'est pas l'utilisateur qui doit être modifié
+            if($tokenLogin !== $user->login) // Si le propriétaire du token n'est pas l'utilisateur qui doit être modifié
                 return response()->json("Vous ne pouvez pas modifier cet utilisateur", Response::HTTP_UNAUTHORIZED);
             $userData = $request->only(['description', 'idAvatar', 'birth', 'firstname', 'lastname']); // Recuperation des champs de la requête
             $user->fill($userData)->save(); // Mis à jour des champs renseignés et mis à jour dans la base de donnée

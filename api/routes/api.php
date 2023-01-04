@@ -24,11 +24,11 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('users', [UserController::class, 'index']);
 Route::post('users', [UserController::class, 'store']);
-Route::get('users/{login}', [UserController::class, 'show']);
-Route::patch('users/{login}', [UserController::class, 'update'])->middleware('verifyToken');
+Route::get('users/{id}', [UserController::class, 'show']);
+Route::patch('users/{id}', [UserController::class, 'update'])->middleware('verifyToken');
 
 Route::post('token', [TokenController::class, 'generate']);
-Route::get('token/whoami', [TokenController::class, 'getLogin'])->middleware('verifyToken'); // Vérifie la validité du token
+Route::get('token', [TokenController::class, 'decode'])->middleware('verifyToken');
 
 Route::get('levels', [LevelController::class, 'index']);
 Route::post('levels', [LevelController::class, 'store'])->middleware('verifyToken');

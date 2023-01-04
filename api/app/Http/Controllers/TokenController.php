@@ -24,8 +24,8 @@ class TokenController extends Controller {
         return response()->json($token); // Retourne le token généré
     }
 
-    public function getLogin (Request $request): JsonResponse { // Une fois le Middleware VerifyToken passé (token valide) permet de recupérer le propriétaire du token
-        $login = TokenService::getLogin($request); // Récupère le token
+    public function decode (Request $request): JsonResponse { // Une fois le Middleware VerifyToken passé (token valide) permet de recupérer le propriétaire du token
+        $login = TokenService::getId($request); // Récupère le token
         return response()->json($login); // Retourne le nom d'utilisateur
     }
 }

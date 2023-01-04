@@ -25,9 +25,8 @@ class LevelController extends Controller {
         $level->description = $request->input('description');
         $level->size = $request->input('size');
         $level->pattern = $request->input('pattern');
-        $login = TokenService::getLogin($request); // Recupère le login de l'utilosateur à l'aide du token
-        $user = User::whereLogin($login)->first(); // Recupère l'utilisateur de l'utisateur pour récupérer son id
-        $level->userId = $user->id; // Ajout de l'identifiant de l'utilisateur dans le niveau
+        $id = TokenService::getId($request); // Recupère le login de l'utilosateur à l'aide du token
+        $level->userId = $id; // Ajout de l'identifiant de l'utilisateur dans le niveau
         $level->finished = false; // Les niveaux ne sont pas encore finies (testées par le créateur) ni publié lors de leur création
         $level->published = false;
         $level->save(); // Enregistrement du niveau dans la base de donnée

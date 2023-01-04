@@ -16,7 +16,6 @@ class TokenService { // Classe statique permettant de générer et valider un to
 
         $payload = [ // Contenu du token
             'sub' => $user->id, // Identifiant de l'utilisateur
-            'name' => $user->login, // Nom d'utilisateur de l'utilisateur
             'iat' => time(), // Date de génération du token
             'exp' => time() + 3600 * 24 * 31, // Date d'expiration du token (1 mois)
         ];
@@ -38,9 +37,9 @@ class TokenService { // Classe statique permettant de générer et valider un to
         }
     }
 
-    public static function getLogin(Request $request) { // Permet de récupérer le nom d'utilisateur d'un token
+    public static function getId(Request $request) { // Permet de récupérer le nom d'utilisateur d'un token
         $token = $request->header('Authorization'); // Recupère le token
         $decoded = self::validateToken($token); // Décode le token
-        return $decoded->name; // Retourne le nom d'utilisateur stocké dans le token
+        return $decoded->sub; // Retourne l'identifiant de l'utilisateur' stocké dans le token
     }
 }
