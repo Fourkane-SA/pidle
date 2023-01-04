@@ -66,7 +66,7 @@ import AvatarSelector from "@/components/AvatarSelectorComponent.vue";
   },
 })
 export default class RegisterView extends Vue {
-  active: number = 1 // l'étape actuelle de l'inscription
+  active: number = 0 // l'étape actuelle de l'inscription
   user: User = new User({idAvatar: 0})
   usersList: User[] = [] // Contient la liste des utilisateurs
   listId = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] // Liste des identifiants des avatars

@@ -1,5 +1,5 @@
 <template>
-  <h1>Connnexion</h1>
+  <h1>Connexion</h1>
   <div class="form">
     <el-form label-width="120px" :label-position="'top'" :rules="rules" ref="formRef" :model="modelForm">
       <el-form-item label="Nom d'utilisateur" prop="login">

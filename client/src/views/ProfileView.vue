@@ -22,12 +22,12 @@ import axios from "@/plugins/axios";
 export default class ProfileView extends Vue {
   user?: User = new User({idAvatar: 0})
   async created() {
-    const login = (await axios.get('/token/whoami',{
+    const id = (await axios.get('/token',{
       headers: {
         'Authorization': localStorage.getItem('token')
       }
     })).data
-    this.user = (await axios.get('/users/' + login)).data
+    this.user = (await axios.get('/users/' + id)).data
   }
 }
 </script>

@@ -49,12 +49,12 @@ export default class EditProfileView extends Vue {
   user: User = new User({})
 
   async created() {
-    const login = (await axios.get('/token/whoami',{
+    const id = (await axios.get('/token',{
       headers: {
         'Authorization': localStorage.getItem('token')
       }
     })).data
-    this.user = (await axios.get('/users/' + login)).data
+    this.user = (await axios.get('/users/' + id)).data
   }
 
   updateIdAvatar(id: number) {
@@ -63,8 +63,8 @@ export default class EditProfileView extends Vue {
 
   async submit() {
     this.loading = true
-    const {login, description, birth, firstname, lastname, idAvatar} = this.user
-    await axios.patch('/users/' + login, {
+    const {id, description, birth, firstname, lastname, idAvatar} = this.user
+    await axios.patch('/users/' + id, {
       description: description,
       birth: birth,
       firstname: firstname,

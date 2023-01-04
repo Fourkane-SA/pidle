@@ -200,7 +200,12 @@ export default class LevelEditorComponent extends Vue {
   }
 
   publish() {
-    console.log(this.title, this.description, this.grid)
+    let count = 0 // Initialisation du compteur de case noire
+    this.grid.forEach(l => { // Pour chaque ligne de la grille
+      count += l.filter(v => v === 'black').length // On ajoute au compteur le nombre de fois qu'il y a une case noire
+    })
+    if(count < this.size + 1)
+      console.log('Il faut un minimum de ' + (this.size + 1) + ' cases noircies')
   }
 
 }
