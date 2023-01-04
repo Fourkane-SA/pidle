@@ -45,9 +45,8 @@ class LevelController extends Controller {
     public function update(Request $request, int $id): JsonResponse {
         try {
             $level = Level::query()->findOrFail($id);
-            $user = User::query()->findOrFail($level->id);
-            $tokenLogin = TokenService::getLogin($request);
-            if($tokenLogin !== $user->login)
+            $tokenId = TokenService::getId($request);
+            if($level->userId !== $tokenId)
                 return response()->json("Vous ne pouvez pas modifier ce niveau", Response::HTTP_UNAUTHORIZED);
             $levelData = $request->only(['description', 'title', 'size', 'pattern', 'published', 'finished']);
             $level->fill($levelData)->save();
@@ -60,9 +59,8 @@ class LevelController extends Controller {
     public function destroy(Request $request, int $id): JsonResponse {
         try {
             $level = Level::query()->findOrFail($id);
-            $user = User::query()->find($level->id);
-            $tokenLogin = TokenService::getLogin($request);
-            if($tokenLogin !== $user->login)
+            $tokenId = TokenService::getId($request);
+            if($level->userId !== $tokenId)
                 return response()->json("Vous ne pouvez pas supprimer ce niveau", Response::HTTP_UNAUTHORIZED);
             $level->delete();
             return response()->json("Niveau supprimé");

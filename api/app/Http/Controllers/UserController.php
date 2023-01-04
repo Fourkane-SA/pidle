@@ -54,7 +54,7 @@ class UserController extends Controller {
 
     /**
      * [GET] /api/users/{login}
-     * @param string $login
+     * @param string $id
      * Le nom d'utilisateur à afficher
      * @return JsonResponse
      * Retourne l'utilisateur
@@ -70,18 +70,18 @@ class UserController extends Controller {
 
     /**
      * [PATCH] /api/users/{login}
-     * @param string $login
+     * @param string $id
      * Le nom d'utilisateur de l'utilisateur à modifier
      * @param Request $request
      * La requête contenant les champs à modifier
      * @return JsonResponse
      * Retourne l'utilisateur modifié
      */
-    public function update(string $id, Request $request): JsonResponse { // Met à jour un utilisateur (après vérification du token)
+    public function update(int $id, Request $request): JsonResponse { // Met à jour un utilisateur (après vérification du token)
         try {
             $user = User::query()->findOrFail($id); // Cherche l'utilisateur
-            $tokenLogin = TokenService::getLogin($request); // Recupère le login enregistré dans le token
-            if($tokenLogin !== $user->login) // Si le propriétaire du token n'est pas l'utilisateur qui doit être modifié
+            $tokenId = TokenService::getId($request); // Recupère le login enregistré dans le token
+            if($id !== $tokenId) // Si le propriétaire du token n'est pas l'utilisateur qui doit être modifié
                 return response()->json("Vous ne pouvez pas modifier cet utilisateur", Response::HTTP_UNAUTHORIZED);
             $userData = $request->only(['description', 'idAvatar', 'birth', 'firstname', 'lastname']); // Recuperation des champs de la requête
             $user->fill($userData)->save(); // Mis à jour des champs renseignés et mis à jour dans la base de donnée
