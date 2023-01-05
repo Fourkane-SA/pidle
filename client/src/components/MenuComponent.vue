@@ -24,7 +24,7 @@
         <el-menu-item index="profile">Mon Profil</el-menu-item>
         <el-menu-item>Statistiques</el-menu-item>
         <el-menu-item>Paramètres</el-menu-item>
-        <el-menu-item>Mes niveaux</el-menu-item>
+        <el-menu-item index="myLevels">Mes niveaux</el-menu-item>
         <el-menu-item index="logout">Déconnexion</el-menu-item>
       </el-sub-menu>
     </template>

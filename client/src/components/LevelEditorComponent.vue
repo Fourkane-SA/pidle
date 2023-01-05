@@ -2,22 +2,22 @@
   <div class="form" v-if="!confirm">
     <el-form label-position="top">
       <el-form-item label="Titre">
-        <el-input v-model="title" />
+        <el-input v-model="level.title" />
       </el-form-item>
       <el-form-item label="Description">
-        <el-input type="textarea" v-model="description" />
+        <el-input type="textarea" v-model="level.description" />
       </el-form-item>
       <el-form-item label="Dimensions">
-        <el-input-number :min="5" :max="15" :value-on-clear="5" v-model="size"/>
+        <el-input-number :min="5" :max="15" :value-on-clear="5" v-model="level.size"/>
       </el-form-item>
     </el-form>
     <el-button @click="initCanvas">Créer</el-button>
   </div>
   <div class="konva" ref="konva" />
   <div v-if="confirm" style="margin: 1em">
-    <el-button @click="publish"> Créer le niveau</el-button>
-    <h2>{{title}}</h2>
-    <p>{{description}}</p>
+    <el-button @click="publish" v-bind:loading="loading"> Créer le niveau</el-button>
+    <h2>{{level.title}}</h2>
+    <p>{{level.description}}</p>
   </div>
 </template>
 
@@ -28,6 +28,9 @@ import Konva from 'konva'
 import Layer = Konva.Layer;
 import Rect = Konva.Rect;
 import { Text } from "konva/lib/shapes/Text";
+import {ElMessage} from "element-plus";
+import {Level} from "@/models/Level";
+import axios from "@/plugins/axios";
 
 export default class LevelEditorComponent extends Vue {
 
@@ -35,17 +38,17 @@ export default class LevelEditorComponent extends Vue {
   layer: Layer = new Konva.Layer()
   color = ['black', 'cyan', 'red', 'maroon', 'green', 'darkgreen', 'blue', 'darkblue', 'indigo', 'mediumblue', 'yellow', 'khaki', 'white', 'magenta', 'darkmagenta', 'olive', 'olivedrab', 'orange', 'violet', 'pink', 'mediumpurple', 'cornflowerblue', 'crimson', 'lightblue']
   selectedColorRect: Rect | undefined
-  size: number = 5
   grid: Array<Array<string>> = []
   counterX: Text[] = []
   counterY: Text[] = []
   confirm = false
-  title: string = ''
-  description: string = ''
+  loading: boolean = false
+  level: Level = new Level({
+    title: '',
+    description: '',
+    size: 5
+  })
 
-  mounted() {
-    //this.initCanvas()
-  }
 
   initCanvas() {
     this.confirm = true
@@ -101,10 +104,10 @@ export default class LevelEditorComponent extends Vue {
   }
 
   initGrid() {
-    const scale = 400/this.size // Echelle d'une case de la grille
-    for(let i=0; i<this.size; i++) {
+    const scale = 400/this.level.size // Echelle d'une case de la grille
+    for(let i=0; i<this.level.size; i++) {
       this.grid[i] = []
-      for(let j=0; j<this.size; j++) {
+      for(let j=0; j<this.level.size; j++) {
         this.grid[i][j] = 'white'
         const rect = new Konva.Rect({
           x: 250 + i*scale,
@@ -126,8 +129,8 @@ export default class LevelEditorComponent extends Vue {
   }
 
   initCounter() {
-    const scale = 400/this.size // Echelle d'une case de la grille
-    for(let i=0; i<this.size; i++) {
+    const scale = 400/this.level.size // Echelle d'une case de la grille
+    for(let i=0; i<this.level.size; i++) {
       const countY = new Konva.Text({
         x: 250 + i*scale + scale/2,
         y: 120,
@@ -199,13 +202,30 @@ export default class LevelEditorComponent extends Vue {
     this.counterY[line].offsetY(this.counterY[line].height())
   }
 
-  publish() {
+  async publish() {
+    this.loading = true
     let count = 0 // Initialisation du compteur de case noire
     this.grid.forEach(l => { // Pour chaque ligne de la grille
       count += l.filter(v => v === 'black').length // On ajoute au compteur le nombre de fois qu'il y a une case noire
     })
-    if(count < this.size + 1)
-      console.log('Il faut un minimum de ' + (this.size + 1) + ' cases noircies')
+    if(count < this.level.size + 1) {
+      ElMessage('Il faut un minimum de ' + (this.level.size + 1) + ' cases noircies')
+    } else {
+      this.level.pattern = JSON.stringify(this.grid)
+      const {title, description, size, pattern} = this.level
+      this.level = (await axios.post('/levels', {
+        title: title,
+        description: description,
+        size: size,
+        pattern: pattern
+      }, {
+        headers: {
+          'Authorization': localStorage.getItem('token')
+        }
+      })).data
+      this.$router.push('/editLevel/' + this.level.id)
+    }
+    this.loading = false
   }
 
 }

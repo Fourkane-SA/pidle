@@ -85,7 +85,7 @@ export default class EditProfileView extends Vue {
 .content
   width: 550px
   border: 1px solid #409eff
-  box-shadow: 4px 3px 10px #0e37ff;
+  box-shadow: 4px 3px 10px #0e37ff
   border-radius: 1em
   margin: 1em auto
   padding: 1em
