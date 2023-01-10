@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="level-display">
-      <div class="level-preview" ref="canvas" />
+      <LevelPreviewComponent class="level-preview" :id="id" />
       <div class="level-info">
         <p class="level-description">{{level.description}}</p>
         <p class="level-updated-at">Dernière mise à jour : {{ new Date(level.updated_at).toLocaleString('fr-FR')}} </p>
@@ -24,11 +24,17 @@
 </template>
 
 <script lang="ts">
-import {Vue} from "vue-class-component";
+import {Options, Vue} from "vue-class-component";
 import {Level} from "@/models/Level";
 import {Prop} from "vue-property-decorator";
 import axios from "@/plugins/axios";
-import Konva from "konva";
+import LevelPreviewComponent from "@/components/LevelPreviewComponent.vue";
+
+@Options({
+  components: {
+    LevelPreviewComponent
+  },
+})
 
 export default class MyLevelComponent extends Vue {
   level: Level = new Level({})
@@ -38,27 +44,7 @@ export default class MyLevelComponent extends Vue {
     this.level = (await axios.get('/levels/' + this.id)).data
     if(this.level.description.length > 50)
       this.level.description = this.level.description.substring(0, 50) + '...'
-    const canvas = new Konva.Stage({
-      container: this.$refs.canvas as HTMLDivElement,
-      width: 100,
-      height: 100
-    })
-    const layer = new Konva.Layer()
-    const pattern = JSON.parse(this.level.pattern)
-    const scale = 100 / this.level.size
-    for(let i=0; i < this.level.size; i++) {
-      for(let j=0; j < this.level.size; j++) {
-        const rect = new Konva.Rect({
-          x: i*scale,
-          y: j*scale,
-          width: scale,
-          height: scale,
-          fill: pattern[i][j]
-        })
-        layer.add(rect)
-      }
-    }
-    canvas.add(layer)
+
   }
 
   editLevel() {

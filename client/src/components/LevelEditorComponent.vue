@@ -38,7 +38,7 @@ export default class LevelEditorComponent extends Vue {
   layer: Layer = new Konva.Layer()
   color = ['black', 'cyan', 'red', 'maroon', 'green', 'darkgreen', 'blue', 'darkblue', 'indigo', 'mediumblue', 'yellow', 'khaki', 'white', 'magenta', 'darkmagenta', 'olive', 'olivedrab', 'orange', 'violet', 'pink', 'mediumpurple', 'cornflowerblue', 'crimson', 'lightblue']
   selectedColorRect: Rect | undefined
-  grid: Array<Array<string>> = []
+  grid: Array<Array<number>> = []
   counterX: Text[] = []
   counterY: Text[] = []
   confirm = false
@@ -97,7 +97,8 @@ export default class LevelEditorComponent extends Vue {
       width: 40,
       height: 40,
       fill: 'black',
-      stroke: 'bkack'
+      stroke: '#409eff',
+      cornerRadius: 20
     })
 
     this.layer.add(this.selectedColorRect)
@@ -108,7 +109,7 @@ export default class LevelEditorComponent extends Vue {
     for(let i=0; i<this.level.size; i++) {
       this.grid[i] = []
       for(let j=0; j<this.level.size; j++) {
-        this.grid[i][j] = 'white'
+        this.grid[i][j] = 12
         const rect = new Konva.Rect({
           x: 250 + i*scale,
           y: 125 + j*scale,
@@ -119,7 +120,8 @@ export default class LevelEditorComponent extends Vue {
         })
         rect.on('click', () => {
           rect.fill(this.selectedColorRect?.fill()!)
-          this.grid[i][j] = rect.fill()
+          this.grid[i][j] = this.color.findIndex((elem) => elem === rect.fill())
+          console.log(this.grid)
           this.updateCounterY(i)
           this.updateCounterX(j)
         })
@@ -136,6 +138,7 @@ export default class LevelEditorComponent extends Vue {
         y: 120,
         text: '0',
         fontSize: 14,
+        fill: 'white'
       })
 
       countY.offsetX(countY.width() / 2)
@@ -149,6 +152,7 @@ export default class LevelEditorComponent extends Vue {
         y: 125 + scale*i + scale/2,
         text: '0',
         fontSize: 14,
+        fill: 'white'
       })
 
       countX.offsetX(countX.width())
@@ -161,12 +165,12 @@ export default class LevelEditorComponent extends Vue {
   }
 
   updateCounterX(column: number) {
-    const values: string[] = []
+    const values: number[] = []
     this.grid.forEach(line => values.push(line[column]))
     const res = []
     let counter = 0
     values.forEach(val => {
-      if(val == 'black') {
+      if(this.color[val] == 'black') {
         counter++
       } else if (counter > 0) {
         res.push(counter)
@@ -186,7 +190,7 @@ export default class LevelEditorComponent extends Vue {
     const res = []
     let counter = 0
     values.forEach(val => {
-      if(val == 'black') {
+      if(this.color[val] == 'black') {
         counter++
       } else if (counter > 0) {
         res.push(counter)
@@ -206,7 +210,7 @@ export default class LevelEditorComponent extends Vue {
     this.loading = true
     let count = 0 // Initialisation du compteur de case noire
     this.grid.forEach(l => { // Pour chaque ligne de la grille
-      count += l.filter(v => v === 'black').length // On ajoute au compteur le nombre de fois qu'il y a une case noire
+      count += l.filter(v => this.color[v] === 'black').length // On ajoute au compteur le nombre de fois qu'il y a une case noire
     })
     if(count < this.level.size + 1) {
       ElMessage('Il faut un minimum de ' + (this.level.size + 1) + ' cases noircies')
@@ -236,7 +240,7 @@ export default class LevelEditorComponent extends Vue {
   margin auto
   width fit-content
   border-radius 1em
-  background grey
+  //background grey
 
 .form
   width 500px

@@ -9,6 +9,7 @@ export class User {
     firstname: string
     lastname: string
     created?: string
+    created_at: string
 
 
     constructor(json: any) {
@@ -21,6 +22,7 @@ export class User {
         this.firstname = json.firstname
         this.lastname = json.lastname
         this.created = json.created
+        this.created_at = json.created_at
     }
 
 }

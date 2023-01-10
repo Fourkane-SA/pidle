@@ -11,6 +11,8 @@ import EditProfileView from "@/views/editProfile.vue";
 import NewLevelView from "@/views/NewLevelView.vue";
 import MyLevelsView from "@/views/MyLevelsView.vue"
 import EditLevelView from "@/views/EditLevelView.vue";
+import RulesView from "@/views/RulesView.vue"
+import LevelView from "@/views/LevelView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -62,6 +64,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/editLevel/:id',
     name: 'editLevel',
     component: EditLevelView
+  },
+  {
+    path: '/rules',
+    name: 'rules',
+    component: RulesView
+  },
+  {
+    path: '/level/:id',
+    name: 'level',
+    component: LevelView
   }
 ]
 

@@ -15,7 +15,7 @@
       </el-input>
       <el-menu-item index="newLevel">Créer un niveau</el-menu-item>
       <el-menu-item>Favoris</el-menu-item>
-      <el-menu-item>Règles</el-menu-item>
+      <el-menu-item index="rules">Règles</el-menu-item>
       <el-menu-item>Historique</el-menu-item>
       <el-sub-menu index="1">
         <template #title>
