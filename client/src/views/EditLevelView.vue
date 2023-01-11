@@ -28,7 +28,7 @@ import LevelComponent from "@/components/LevelComponent.vue";
 })
 
 export default class EditLevelView extends Vue {
-  level: Level = new Level({})
+  level: Level = new Level()
   color = ['black', 'cyan', 'red', 'maroon', 'green', 'darkgreen', 'blue', 'darkblue', 'indigo', 'mediumblue', 'yellow', 'khaki', 'white', 'magenta', 'darkmagenta', 'olive', 'olivedrab', 'orange', 'violet', 'pink', 'mediumpurple', 'cornflowerblue', 'crimson', 'lightblue']
   loadingSave: boolean = false
   loadingPublish: boolean = false

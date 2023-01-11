@@ -37,7 +37,7 @@ import LevelPreviewComponent from "@/components/LevelPreviewComponent.vue";
 })
 
 export default class MyLevelComponent extends Vue {
-  level: Level = new Level({})
+  level: Level = new Level()
   @Prop({ required: true }) id!: number
 
   async mounted() {

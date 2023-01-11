@@ -9,7 +9,7 @@ export class Level {
     published: boolean
     updated_at: string
 
-    constructor(json: any) {
+    constructor(json: any = {}) {
         this.id = json.id
         this.title = json.title
         this.description = json.description

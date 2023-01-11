@@ -24,7 +24,7 @@
 <script lang="ts">
 
 import {Options, Vue} from "vue-class-component";
-import LevelComponent from "@/components/LevelComponent";
+import LevelComponent from "@/components/LevelComponent.vue";
 import {Level} from "@/models/Level";
 import axios from "@/plugins/axios";
 import {User} from "@/models/User";
@@ -39,8 +39,8 @@ import { Star, StarFilled } from "@element-plus/icons-vue";
 })
 export default class LevelView extends Vue {
   favoris = false
-  level: Level = new Level({})
-  user: User = new User({})
+  level: Level = new Level()
+  user: User = new User()
   async mounted() {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
     this.user = (await axios.get('/users/' + this.level.userId)).data

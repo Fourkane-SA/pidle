@@ -9,6 +9,7 @@ import {Text} from "konva/lib/shapes/Text";
 import axios from "@/plugins/axios";
 import {Level} from "@/models/Level";
 import {Emit} from "vue-property-decorator";
+import {Game} from "@/models/Game";
 
 
 export default class LevelComponent extends Vue {
@@ -16,7 +17,7 @@ export default class LevelComponent extends Vue {
   updateLevel(level: Level) {
     return level
   }
-  level: Level = new Level({})
+  level: Level = new Level()
   canvas!: Konva.Stage
   layer: Konva.Layer = new Konva.Layer()
   counterX: Text[] = []
@@ -25,9 +26,13 @@ export default class LevelComponent extends Vue {
   grid: Array<Array<Konva.Rect>> = []
   lifeRect: Array<Konva.Rect> = []
   life: number = 3
+  game: Game = new Game()
   async mounted() {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
-    await this.ownerLevel()
+    if(!await this.ownerLevel()) {
+      // TODO AXIOS POUR CREER LE NIVEAU
+      //this.game.levelId = Number(this.$route.params.id)
+    }
     this.initLevel()
   }
   async ownerLevel() {
@@ -38,6 +43,7 @@ export default class LevelComponent extends Vue {
     })).data
     if(playerId !== this.level.userId)
       this.level.finished = false
+    return playerId === this.level.userId
   }
   initLevel() {
     this.canvas = new Konva.Stage({
@@ -210,6 +216,7 @@ export default class LevelComponent extends Vue {
   verifyValid(i: number, j: number) {
     const pattern: [][] = JSON.parse(this.level.pattern)
     if(pattern[i][j] !== 0) {
+      // TODO MISE A JOUR GAME + AXIOS UDPATE
       this.grid[i][j].fill('red')
       this.life--;
       this.lifeRect[this.life].fill('')
@@ -218,6 +225,7 @@ export default class LevelComponent extends Vue {
         this.lifeRect.forEach(rect => rect.destroy())
         this.counterX.forEach(text => text.destroy())
         this.counterY.forEach(text => text.destroy())
+        // TODO AXIOS FIN DE PARTIE PERDUE
         const text = new Konva.Text({
           text: "Vous avez perdu!",
           x: 300,
@@ -247,6 +255,9 @@ export default class LevelComponent extends Vue {
   }
 
   async colorLevel() {
+    if(false) {
+      // TODO AXIOS POUR METTRE LA FIN DE PARTIE GAGNEE
+    }
     this.updateLevel(this.level)
     const pattern: [][] = JSON.parse(this.level.pattern)
     for(let i=0; i<this.level.size; i++) {

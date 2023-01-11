@@ -13,7 +13,7 @@ import Konva from "konva";
 export default class LevelPreviewComponent extends Vue {
   @Prop({ required: true }) id!: number
 
-  level: Level = new Level({})
+  level: Level = new Level()
 
   async mounted() {
     this.level = (await axios.get('/levels/' + this.id)).data
@@ -52,7 +52,8 @@ export default class LevelPreviewComponent extends Vue {
             y: j*scale,
             width: scale,
             height: scale,
-            fill: color[pattern[i][j]]
+            fill: color[pattern[i][j]],
+            stroke: color[pattern[i][j]]
           })
           layer.add(rect)
         }

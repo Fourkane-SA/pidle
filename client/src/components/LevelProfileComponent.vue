@@ -30,7 +30,7 @@ import LevelPreviewComponent from "@/components/LevelPreviewComponent.vue";
 export default class LevelProfileComponent extends Vue {
   @Prop({ required: true }) id!: number
 
-  level: Level = new Level({})
+  level: Level = new Level()
 
   async created() {
     this.level = (await axios.get('/levels/' + this.id)).data

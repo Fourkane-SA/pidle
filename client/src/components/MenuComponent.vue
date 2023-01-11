@@ -14,17 +14,19 @@
         </template>
       </el-input>
       <el-menu-item index="newLevel">Créer un niveau</el-menu-item>
-      <el-menu-item>Favoris</el-menu-item>
+      <el-menu-item index="myLevels">Mes niveaux</el-menu-item>
       <el-menu-item index="rules">Règles</el-menu-item>
-      <el-menu-item>Historique</el-menu-item>
+
       <el-sub-menu index="1">
         <template #title>
           <el-icon><User /></el-icon>
         </template>
         <el-menu-item index="profile">Mon Profil</el-menu-item>
-        <el-menu-item>Statistiques</el-menu-item>
-        <el-menu-item>Paramètres</el-menu-item>
-        <el-menu-item index="myLevels">Mes niveaux</el-menu-item>
+        <el-menu-item>Historique</el-menu-item>
+        <el-menu-item>Favoris</el-menu-item>
+        <!--<el-menu-item>Statistiques</el-menu-item>
+        <el-menu-item>Paramètres</el-menu-item>-->
+
         <el-menu-item index="logout">Déconnexion</el-menu-item>
       </el-sub-menu>
     </template>

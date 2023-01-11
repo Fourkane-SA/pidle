@@ -36,8 +36,8 @@ import { User } from "@/models/User";
 export default class LevelListElementComponent extends Vue {
   @Prop({ required: true }) id!: number
 
-  level: Level = new Level({})
-  user: User = new User({})
+  level: Level = new Level()
+  user: User = new User()
   async created() {
     this.level = (await axios.get('/levels/' + this.id)).data
     this.user = (await axios.get('/users/' + this.level.userId)).data

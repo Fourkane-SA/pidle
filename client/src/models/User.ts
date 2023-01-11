@@ -12,7 +12,7 @@ export class User {
     created_at: string
 
 
-    constructor(json: any) {
+    constructor(json: any = {}) {
         this.id = json.id
         this.login = json.login
         this.description = json.description
