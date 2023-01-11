@@ -28,8 +28,16 @@ export default class HomeLoggedView extends Vue {
 
   levels: Level[] = []
   async mounted() {
+    const userId = (await axios.get('/token', {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      }
+    })).data
     this.levels = (await axios.get('/levels')).data
-    this.levels = this.levels.filter(level => level.published)
+    this.levels = this.levels
+        .filter(level => level.published)
+        .filter(level => level.userId !== userId)
+        .sort((a, b) => a.id > b.id ? -1 : 1)
     this.orderByDate()
   }
   orderByDate() {

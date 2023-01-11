@@ -23,6 +23,8 @@ export default class LevelComponent extends Vue {
   counterY: Text[] = []
   color = ['black', 'cyan', 'red', 'maroon', 'green', 'darkgreen', 'blue', 'darkblue', 'indigo', 'mediumblue', 'yellow', 'khaki', 'white', 'magenta', 'darkmagenta', 'olive', 'olivedrab', 'orange', 'violet', 'pink', 'mediumpurple', 'cornflowerblue', 'crimson', 'lightblue']
   grid: Array<Array<Konva.Rect>> = []
+  lifeRect: Array<Konva.Rect> = []
+  life: number = 3
   async mounted() {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
     await this.ownerLevel()
@@ -45,6 +47,7 @@ export default class LevelComponent extends Vue {
     })
     this.initGrid()
     this.initCounter()
+    this.initLife()
     this.canvas.add(this.layer)
   }
 
@@ -63,18 +66,24 @@ export default class LevelComponent extends Vue {
         })
         this.grid[i][j].on('click', () => {
           if(!this.level.finished) {
-            if(this.grid[i][j].fill() === 'white')
+            if(this.grid[i][j].fill() === 'white') {
               this.grid[i][j].fill('black')
-            else
-              this.grid[i][j].fill('white')
-            this.level.finished = this.verifyComplete()
-            if(this.level.finished) {
-              this.colorLevel()
+              this.verifyColumn(i)
+              this.verifyLine(j)
+              this.verifyValid(i, j)
+              this.level.finished = this.verifyComplete()
+              if(this.level.finished) {
+                this.colorLevel()
+              }
             }
           }
         })
         this.layer.add(this.grid[i][j])
       }
+    }
+    for(let i=0; i<this.level.size; i++) {
+      this.verifyLine(i)
+      this.verifyColumn(i)
     }
     if(this.level.finished)
       this.colorLevel()
@@ -152,15 +161,86 @@ export default class LevelComponent extends Vue {
     return text
   }
 
+  initLife() {
+    for(let i=0; i<this.life; i++) {
+      const rect = new Konva.Rect({
+        x: 5+i*35,
+        y: 20,
+        width: 25,
+        height: 25,
+        fill: 'red',
+        stroke: 'black'
+      })
+      this.lifeRect.push(rect)
+      this.layer.add(rect)
+    }
+  }
+
+  verifyColumn(column: number) {
+    const pattern: [][] = JSON.parse(this.level.pattern)
+    const columnList = this.grid[column]
+            .map(rect => rect.fill())
+            .map(val => val === 'white'? 1 : 0)
+    const columnPattern = pattern[column].map(val => val === 0 ? 0 : 1)
+    if (JSON.stringify(columnList) === JSON.stringify(columnPattern)) {
+      for(let i=0; i<this.level.size; i++) {
+        if(columnList[i] === 1)
+          this.grid[column][i].fill('grey')
+      }
+    }
+  }
+
+  verifyLine(line: number) {
+    const pattern: [][] = JSON.parse(this.level.pattern)
+    const lineListActual = []
+    const lineListPattern = []
+    for(let i=0; i<this.level.size; i++) {
+      const actual = this.grid[i][line].fill() === 'black' ? 0 : 1
+      lineListActual.push(actual)
+      const patternValue = pattern[i][line] === 0 ? 0 : 1
+      lineListPattern.push(patternValue)
+    }
+    if(JSON.stringify(lineListPattern) === JSON.stringify(lineListActual))
+      for(let i=0; i<this.level.size; i++) {
+        if(lineListActual[i] === 1)
+          this.grid[i][line].fill('grey')
+      }
+  }
+
+  verifyValid(i: number, j: number) {
+    const pattern: [][] = JSON.parse(this.level.pattern)
+    if(pattern[i][j] !== 0) {
+      this.grid[i][j].fill('red')
+      this.life--;
+      this.lifeRect[this.life].fill('')
+      if(this.life === 0) {
+        this.grid.forEach(column => column.forEach(rect => rect.destroy()))
+        this.lifeRect.forEach(rect => rect.destroy())
+        this.counterX.forEach(text => text.destroy())
+        this.counterY.forEach(text => text.destroy())
+        const text = new Konva.Text({
+          text: "Vous avez perdu!",
+          x: 300,
+          y: 300,
+          fontSize: 70,
+          fill: 'white'
+        })
+        text.offsetX(text.width()/2)
+        text.offsetY(text.height()/2)
+        this.layer.add(text)
+      }
+    }
+  }
+
   verifyComplete() {
     let result: number[][] = []
     const pattern: [][] = JSON.parse(this.level.pattern)
     const actual: number[][] = []
     for(let i=0; i<this.level.size; i++) {
-      result[i] = (pattern[i].map(val => val === 0 ? 0 : 12))
+      result[i] = (pattern[i].map(val => val === 0 ? 0 : 1))
       actual[i] = []
       for(let j=0; j<this.level.size; j++) {
-        actual[i][j] = this.color.findIndex((elem) => elem == this.grid[i][j].fill())
+        actual[i][j] = this.grid[i][j].fill() === 'black' ? 0 : 1 // this.color.findIndex((elem) => elem == this.grid[i][j].fill())
       }
     }
     return JSON.stringify(result) === JSON.stringify(actual)
@@ -172,7 +252,7 @@ export default class LevelComponent extends Vue {
     for(let i=0; i<this.level.size; i++) {
       for(let j=0; j<this.level.size; j++) {
         this.grid[i][j].fill(this.color[pattern[i][j]])
-        this.grid[i][j].stroke('')
+        this.grid[i][j].stroke(this.grid[i][j].fill())
         await new Promise(resolve => setTimeout(resolve, 50))
       }
     }

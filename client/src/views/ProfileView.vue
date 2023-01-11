@@ -13,8 +13,8 @@
       <h2>Statistiques</h2>
       <p>Membre depuis le :
       {{new Date(user.created_at).toLocaleDateString('fr-FR')}}</p>
-      <p>Parties jouées : n</p>
-      <p>Parties terminées : n</p>
+      <p>Parties jouées : {{gameStarted}} </p>
+      <p>Parties terminées : {{gameFinished}} </p>
       <p>Parties créées : {{levels.length}}</p>
     </div>
     <div class="listLevels">
@@ -30,6 +30,7 @@ import {User} from "@/models/User";
 import axios from "@/plugins/axios";
 import LevelProfileComponent from "@/components/LevelProfileComponent.vue";
 import {Level} from "@/models/Level";
+import {Game} from "@/models/Game";
 
 @Options({
   components: {
@@ -40,6 +41,8 @@ import {Level} from "@/models/Level";
 export default class ProfileView extends Vue {
   user?: User = new User({idAvatar: 0})
   levels: Level[] = []
+  gameStarted: number = 0
+  gameFinished: number = 0
   async created() {
     const id = (await axios.get('/token',{
       headers: {
@@ -49,6 +52,9 @@ export default class ProfileView extends Vue {
     this.user = (await axios.get('/users/' + id)).data
     const data = (await axios.get('/levels')).data
     this.levels = data.filter((level: Level) => level.userId === this.user!.id)
+    const games: Game[] = (await axios.get('/games/byUserId/' + id)).data
+    this.gameStarted = games.length
+    this.gameFinished = games.filter(game => game.completed).length
   }
 }
 </script>
