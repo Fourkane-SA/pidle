@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Level;
-use App\Models\User;
 use App\Services\TokenService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -33,38 +32,38 @@ class LevelController extends Controller {
         return response()->json($level);
     }
 
-    public function show(int $id): JsonResponse {
+    public function show(int $id): JsonResponse { // Permet de recupérer un niveau par son id
         try {
-            $level = Level::query()->findOrFail($id);
+            $level = Level::query()->findOrFail($id); // Lève une exception si le niveau n'existe pas
             return response()->json($level);
-        } catch (ModelNotFoundException $modelNotFoundException) {
+        } catch (ModelNotFoundException $modelNotFoundException) { // Si le niveau n'existe aps
             return  response()->json("Ce niveau n'existe pas", Response::HTTP_NOT_FOUND);
         }
     }
 
-    public function update(Request $request, int $id): JsonResponse {
+    public function update(Request $request, int $id): JsonResponse { // Mis à jour d'un niveau (après vérification du token)
         try {
-            $level = Level::query()->findOrFail($id);
-            $tokenId = TokenService::getId($request);
-            if($level->userId !== $tokenId)
+            $level = Level::query()->findOrFail($id); // Lève une exception si le niveau n'existe pas
+            $tokenId = TokenService::getId($request); // Recupère l'id de l'utilisateur stocké dans le token
+            if($level->userId !== $tokenId) // Si le créateur du niveau n'est pas celui de l'utilisateur connecté
                 return response()->json("Vous ne pouvez pas modifier ce niveau", Response::HTTP_UNAUTHORIZED);
-            $levelData = $request->only(['description', 'title', 'size', 'pattern', 'published', 'finished']);
-            $level->fill($levelData)->save();
+            $levelData = $request->only(['description', 'title', 'size', 'pattern', 'published', 'finished']); // Champs pouvant etre modifié
+            $level->fill($levelData)->save(); // Modification des champs non nuls
             return response()->json($level);
-        } catch (ModelNotFoundException $modelNotFoundException) {
+        } catch (ModelNotFoundException $modelNotFoundException) { // Si le niveau n'a pas été trouvé
             return response()->json("Ce niveau n'existe pas");
         }
     }
 
-    public function destroy(Request $request, int $id): JsonResponse {
+    public function destroy(Request $request, int $id): JsonResponse { // Supprime un niveau (après vérification du token)
         try {
-            $level = Level::query()->findOrFail($id);
-            $tokenId = TokenService::getId($request);
-            if($level->userId !== $tokenId)
+            $level = Level::query()->findOrFail($id); // Lève une exception si le niveau n'existe pas
+            $tokenId = TokenService::getId($request); // Recupère l'id de l'utilisateur stocké dans le token
+            if($level->userId !== $tokenId) // Si le créateur du niveau n'est pas celui de l'utilisateur connecté
                 return response()->json("Vous ne pouvez pas supprimer ce niveau", Response::HTTP_UNAUTHORIZED);
-            $level->delete();
+            $level->delete(); // Supprime le niveau
             return response()->json("Niveau supprimé");
-        } catch (ModelNotFoundException $modelNotFoundException) {
+        } catch (ModelNotFoundException $modelNotFoundException) { // Le niveau n'a pas été trouvé
             return response()->json("Ce niveau n'existe pas");
         }
     }

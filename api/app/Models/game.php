@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Level extends Model {
+class game extends Model
+{
 
-    protected $fillable = ['title', 'description', 'userId', 'finished', 'published', 'size', 'pattern'];
+    protected $fillable = [];
+
     public function user(): HasOne {
         return $this->hasOne(User::class);
     }
-    public function game() {
-        return $this->belongsTo(game::class);
+
+    public function level(): HasOne {
+        return $this->hasOne(Level::class);
     }
 }
