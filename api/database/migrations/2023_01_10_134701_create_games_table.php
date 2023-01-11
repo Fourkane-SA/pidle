@@ -21,6 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('levelId');
             $table->foreign('levelId')->references('id')->on('levels');
             $table->boolean('completed');
+            $table->integer('life');
+            $table->boolean('end');
         });
     }
 

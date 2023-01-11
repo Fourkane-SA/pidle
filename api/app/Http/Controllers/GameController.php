@@ -25,7 +25,9 @@ class GameController extends Controller {
         $game = new game();
         $game->userId = $userId;
         $game->levelId = $levelId;
+        $game->life = 3;
         $game->completed = false;
+        $game->end = false;
         $game->save();
         return response()->json($game);
     }
@@ -45,17 +47,15 @@ class GameController extends Controller {
         return response()->json($games);
     }
 
-    public function finish(int $id, Request $request) {
+    public function update(int $id, Request $request) {
         $game = game::find($id);
         if(!$game)
             return response()->json("Ce niveau n'existe pas", Response::HTTP_NOT_FOUND);
         $userId = TokenService::getId($request);
         if($userId !== $game->userId)
             return response()->json("Vous n'etes pas autorisé à modifier ce niveau", Response::HTTP_UNAUTHORIZED);
-        if(!$game->completed) {
-            $game->completed = true;
-            $game->save();
-        }
+        $gameData = $request->only(['life', 'completed', 'end']); // Champs pouvant etre modifié
+        $game->fill($gameData)->save();
         return response()->json($game);
     }
 }
