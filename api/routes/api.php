@@ -40,4 +40,4 @@ Route::get('games', [GameController::class, 'index']);
 Route::post('games', [GameController::class, 'store'])->middleware('verifyToken');
 Route::get('games/{id}', [GameController::class, 'show']);
 Route::get('games/byUserId/{id}', [GameController::class, 'showByUser']);
-Route::post('games/{id}', [GameController::class, 'update'])->middleware('verifyToken');
+Route::patch('games/{id}', [GameController::class, 'update'])->middleware('verifyToken');

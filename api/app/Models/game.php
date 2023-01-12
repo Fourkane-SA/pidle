@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class game extends Model
 {
 
+    protected $fillable = ['end', 'life', 'completed'];
 
     public function user(): HasOne {
         return $this->hasOne(User::class);
