@@ -212,8 +212,8 @@ export default class LevelEditorComponent extends Vue {
     this.grid.forEach(l => { // Pour chaque ligne de la grille
       count += l.filter(v => this.color[v] === 'black').length // On ajoute au compteur le nombre de fois qu'il y a une case noire
     })
-    if(count < this.level.size + 1) {
-      ElMessage('Il faut un minimum de ' + (this.level.size + 1) + ' cases noircies')
+    if(count < 4) {
+      ElMessage('Il faut un minimum de 4 cases noircies')
     } else {
       this.level.pattern = JSON.stringify(this.grid)
       const {title, description, size, pattern} = this.level

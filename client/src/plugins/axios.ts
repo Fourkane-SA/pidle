@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const instance = axios.create({
-    baseURL: 'http://157.230.100.33/api'
+    baseURL: 'https://api.pidle.fourkane.me/api'
 })
 
 export default instance
