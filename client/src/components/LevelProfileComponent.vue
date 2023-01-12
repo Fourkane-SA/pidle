@@ -6,7 +6,7 @@
         <p>{{ level.description }}</p>
       </template>
       <LevelPreviewComponent :id="id" />
-      <p>Joué 0 fois</p>
+      <p>Joué {{count}} fois</p>
       <el-button>Jouer</el-button>
     </el-card>
   </div>
@@ -20,6 +20,7 @@ import {Prop} from "vue-property-decorator";
 import {Level} from "@/models/Level";
 import axios from "@/plugins/axios";
 import LevelPreviewComponent from "@/components/LevelPreviewComponent.vue";
+import {Game} from "@/models/Game";
 
 @Options({
   components: {
@@ -31,9 +32,12 @@ export default class LevelProfileComponent extends Vue {
   @Prop({ required: true }) id!: number
 
   level: Level = new Level()
+  count: number = 0
 
   async created() {
     this.level = (await axios.get('/levels/' + this.id)).data
+    const games: Game[] = (await axios.get('/games')).data
+    this.count = games.filter(game => game.levelId === this.level.id).length
   }
 }
 </script>

@@ -4,9 +4,8 @@
     <p><strong>{{ user.login }}</strong></p>
     <p>{{user.description}}</p>
     <router-link class="link" to="/editProfile">
-      <el-button>Modifier</el-button>
+      <el-button class="button">Modifier</el-button>
     </router-link>
-    <p>0 abonnées | 0 abonnements</p>
   </div>
   <div class="bodyProfile">
     <div class="infosProfile">
@@ -100,5 +99,7 @@ img
   display flex
   flex-wrap wrap
 
+.button
+  margin-bottom 1em
 
 </style>

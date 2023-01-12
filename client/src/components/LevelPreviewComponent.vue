@@ -9,6 +9,7 @@ import {Prop} from "vue-property-decorator";
 import {Level} from "@/models/Level";
 import axios from "@/plugins/axios";
 import Konva from "konva";
+import {Game} from "@/models/Game";
 
 export default class LevelPreviewComponent extends Vue {
   @Prop({ required: true }) id!: number
@@ -68,7 +69,8 @@ export default class LevelPreviewComponent extends Vue {
         'Authorization': localStorage.getItem('token')
       }
     })).data
-    return this.level.userId !== idUser
+    const games: Game[] = (await axios.get('/games/byUserId/' + idUser )).data
+    return this.level.userId !== idUser && games.filter(game => game.levelId === this.level.id).length === 0
   }
 }
 </script>

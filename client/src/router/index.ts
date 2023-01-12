@@ -13,6 +13,7 @@ import MyLevelsView from "@/views/MyLevelsView.vue"
 import EditLevelView from "@/views/EditLevelView.vue";
 import RulesView from "@/views/RulesView.vue"
 import LevelView from "@/views/LevelView.vue"
+import HistoryView from "@/views/HistoryView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -74,6 +75,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/level/:id',
     name: 'level',
     component: LevelView
+  },
+  {
+    path: '/history',
+    name: 'history',
+    component: HistoryView
   }
 ]
 

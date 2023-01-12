@@ -30,8 +30,13 @@ export default class LevelComponent extends Vue {
   async mounted() {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
     if(!await this.ownerLevel()) {
-      // TODO AXIOS POUR CREER LE NIVEAU
-      //this.game.levelId = Number(this.$route.params.id)
+      this.game = (await axios.post('games', {
+        'levelId': this.level.id
+      }, {
+        headers: {
+          'Authorization': localStorage.getItem('token')
+        }
+      })).data
     }
     this.initLevel()
   }
@@ -213,19 +218,32 @@ export default class LevelComponent extends Vue {
       }
   }
 
-  verifyValid(i: number, j: number) {
+  async verifyValid(i: number, j: number) {
     const pattern: [][] = JSON.parse(this.level.pattern)
     if(pattern[i][j] !== 0) {
-      // TODO MISE A JOUR GAME + AXIOS UDPATE
       this.grid[i][j].fill('red')
       this.life--;
+      this.game = (await axios.patch('/games/' + this.game.id, {
+        life: this.life
+      }, {
+        headers: {
+          'Authorization': localStorage.getItem('token')
+        }
+      })).data
       this.lifeRect[this.life].fill('')
       if(this.life === 0) {
         this.grid.forEach(column => column.forEach(rect => rect.destroy()))
         this.lifeRect.forEach(rect => rect.destroy())
         this.counterX.forEach(text => text.destroy())
         this.counterY.forEach(text => text.destroy())
-        // TODO AXIOS FIN DE PARTIE PERDUE
+        this.game = (await axios.patch('games/' + this.game.id, {
+          completed: false,
+          end: true
+        }, {
+          headers: {
+            'Authorization': localStorage.getItem('token')
+          }
+        })).data
         const text = new Konva.Text({
           text: "Vous avez perdu!",
           x: 300,
@@ -255,9 +273,14 @@ export default class LevelComponent extends Vue {
   }
 
   async colorLevel() {
-    if(false) {
-      // TODO AXIOS POUR METTRE LA FIN DE PARTIE GAGNEE
-    }
+    this.game = (await axios.patch('/games/' + this.game.id, {
+      completed: true,
+      end: true
+    }, {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      }
+    })).data
     this.updateLevel(this.level)
     const pattern: [][] = JSON.parse(this.level.pattern)
     for(let i=0; i<this.level.size; i++) {
@@ -270,7 +293,3 @@ export default class LevelComponent extends Vue {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

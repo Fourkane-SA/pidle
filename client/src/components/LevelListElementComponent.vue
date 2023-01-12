@@ -14,7 +14,7 @@
     </div>
     <div class="infos">
       <p>Créé par <strong>{{ user.login }}</strong> le <strong> {{new Date(level.updated_at).toLocaleDateString('fr-FR')}}</strong></p>
-      <p>Joué n fois</p>
+      <p>Joué {{count}} fois</p>
     </div>
   </el-card>
 </template>
@@ -27,6 +27,7 @@ import {Prop} from "vue-property-decorator";
 import {Level} from "@/models/Level";
 import axios from "@/plugins/axios";
 import { User } from "@/models/User";
+import { Game } from "@/models/Game";
 
 @Options({
   components: {
@@ -38,9 +39,12 @@ export default class LevelListElementComponent extends Vue {
 
   level: Level = new Level()
   user: User = new User()
+  count: number = 0
   async created() {
     this.level = (await axios.get('/levels/' + this.id)).data
     this.user = (await axios.get('/users/' + this.level.userId)).data
+    let games: Game[] = (await axios.get('/games')).data
+    this.count = games.filter(g => g.levelId === this.id).length
   }
 }
 </script>
