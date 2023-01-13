@@ -14,6 +14,7 @@ import EditLevelView from "@/views/EditLevelView.vue";
 import RulesView from "@/views/RulesView.vue"
 import LevelView from "@/views/LevelView.vue"
 import HistoryView from "@/views/HistoryView.vue"
+import FavorisView from "@/views/FavorisView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -80,11 +81,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/history',
     name: 'history',
     component: HistoryView
+  },
+  {
+    path: '/favoris',
+    name: 'favoris',
+    component: FavorisView
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
+  linkActiveClass: 'active-link',
+  linkExactActiveClass: 'exact-active-link',
   routes
 })
 

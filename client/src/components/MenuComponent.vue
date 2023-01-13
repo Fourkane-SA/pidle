@@ -23,10 +23,9 @@
         </template>
         <el-menu-item index="profile">Mon Profil</el-menu-item>
         <el-menu-item index="history">Historique</el-menu-item>
-        <el-menu-item>Favoris</el-menu-item>
+        <el-menu-item index="favoris">Favoris</el-menu-item>
         <!--<el-menu-item>Statistiques</el-menu-item>
         <el-menu-item>Paramètres</el-menu-item>-->
-
         <el-menu-item index="logout">Déconnexion</el-menu-item>
       </el-sub-menu>
     </template>

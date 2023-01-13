@@ -14,6 +14,7 @@
     <div class="favoris">
       <Star style="width: 40px" v-if="!favoris" @click="clickFavoris"/>
       <StarFilled style="width: 40px " v-if="favoris" @click="clickFavoris"/>
+      {{countLikes}}
     </div>
   </div>
   <div class="comments">
@@ -29,6 +30,7 @@ import {Level} from "@/models/Level";
 import axios from "@/plugins/axios";
 import {User} from "@/models/User";
 import { Star, StarFilled } from "@element-plus/icons-vue";
+import { Favoris } from "@/models/favoris";
 
 @Options({
   components: {
@@ -41,12 +43,30 @@ export default class LevelView extends Vue {
   favoris = false
   level: Level = new Level()
   user: User = new User()
+  countLikes: number = 0
   async mounted() {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
     this.user = (await axios.get('/users/' + this.level.userId)).data
+    const idUser = (await axios.get('/token', {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      }
+    })).data
+    const favorisList: Favoris[] = (await axios.get('/favoris/byUserId/' + idUser)).data
+    let fav = favorisList.filter(fav => fav.levelId === this.level.id)
+    if(fav.length > 0) {
+      this.favoris = fav[0].isLiked
+    }
+    this.countLikes = (await axios.get('/favoris/count/' + this.level.id)).data
   }
-  clickFavoris() {
-    this.favoris = !this.favoris
+  async clickFavoris() {
+    const fav: Favoris = (await axios.patch('/favoris/' + this.level.id,null, {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      }
+    })).data
+    this.favoris = fav.isLiked
+    this.countLikes = (await axios.get('/favoris/count/' + this.level.id)).data
   }
 }
 </script>
