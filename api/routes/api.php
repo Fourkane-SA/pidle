@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FavorisController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\TokenController;
@@ -41,3 +42,11 @@ Route::post('games', [GameController::class, 'store'])->middleware('verifyToken'
 Route::get('games/{id}', [GameController::class, 'show']);
 Route::get('games/byUserId/{id}', [GameController::class, 'showByUser']);
 Route::patch('games/{id}', [GameController::class, 'update'])->middleware('verifyToken');
+
+
+/*
+ * FavorisController
+ */
+Route::patch('favoris/{id}', [FavorisController::class, 'update'])->middleware('verifyToken');
+Route::get('favoris/count/{id}', [FavorisController::class, 'countByLevel']);
+Route::get('favoris/byUserId/{id}', [FavorisController::class, 'showByUser']);
