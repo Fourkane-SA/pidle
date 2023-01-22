@@ -7,7 +7,6 @@
       </template>
       <LevelPreviewComponent :id="id" />
       <p>Joué {{count}} fois</p>
-      <el-button>Jouer</el-button>
     </el-card>
   </div>
 

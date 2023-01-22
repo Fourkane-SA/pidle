@@ -29,14 +29,28 @@ export default class LevelComponent extends Vue {
   game: Game = new Game()
   async mounted() {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
+    const userId = (await axios.get('/token', {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      }
+    })).data
     if(!await this.ownerLevel()) {
-      this.game = (await axios.post('games', {
-        'levelId': this.level.id
-      }, {
-        headers: {
-          'Authorization': localStorage.getItem('token')
+      const history: Game[] = (await axios.get('/games/byUserId/' + userId)).data
+      if(history.length > 0) {
+        if(history[history.length - 1].completed) {
+          this.level.finished = true
+          this.game = history[history.length - 1]
         }
-      })).data
+      }
+      if(!this.game.completed) {
+        this.game = (await axios.post('games', {
+          'levelId': this.level.id
+        }, {
+          headers: {
+            'Authorization': localStorage.getItem('token')
+          }
+        })).data
+      }
     }
     this.initLevel()
   }

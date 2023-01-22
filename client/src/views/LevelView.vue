@@ -17,9 +17,6 @@
       {{countLikes}}
     </div>
   </div>
-  <div class="comments">
-    TODO commentaires
-  </div>
 </template>
 
 <script lang="ts">

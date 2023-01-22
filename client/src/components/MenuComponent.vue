@@ -8,11 +8,7 @@
     </template>
     <template v-else>
       <el-menu-item index="/home">PIDLE</el-menu-item>
-      <el-input v-model="searchModel" class="search" placeholder="Rechercher">
-        <template #prefix>
-          <el-icon class="el-input__icon"><Search /></el-icon>
-        </template>
-      </el-input>
+      <div class="flex-grow" />
       <el-menu-item index="newLevel">Créer un niveau</el-menu-item>
       <el-menu-item index="myLevels">Mes niveaux</el-menu-item>
       <el-menu-item index="rules">Règles</el-menu-item>
@@ -24,8 +20,6 @@
         <el-menu-item index="profile">Mon Profil</el-menu-item>
         <el-menu-item index="history">Historique</el-menu-item>
         <el-menu-item index="favoris">Favoris</el-menu-item>
-        <!--<el-menu-item>Statistiques</el-menu-item>
-        <el-menu-item>Paramètres</el-menu-item>-->
         <el-menu-item index="logout">Déconnexion</el-menu-item>
       </el-sub-menu>
     </template>
@@ -35,6 +29,8 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import {User} from "@element-plus/icons-vue";
+import { ref } from "vue";
+
 
 @Options({
   components: {
@@ -44,12 +40,12 @@ import {User} from "@element-plus/icons-vue";
 
 export default class MenuComponent extends Vue {
 
-
+  state = ref('')
   active = location.pathname
-  searchModel = ''
   get connected() {
     return localStorage.getItem('token') != null
   }
+
 
 }
 </script>

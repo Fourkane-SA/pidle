@@ -70,7 +70,10 @@ export default class LevelPreviewComponent extends Vue {
       }
     })).data
     const games: Game[] = (await axios.get('/games/byUserId/' + idUser )).data
-    return this.level.userId !== idUser && games.filter(game => game.levelId === this.level.id).length === 0
+    return this.level.userId !== idUser && games
+        .filter(game => game.levelId === this.level.id)
+        .filter(game => game.completed)
+        .length === 0
   }
 }
 </script>
