@@ -46,7 +46,8 @@ class UserController extends Controller {
         $user->lastname = $request->input('lastname') ?: "";
         try {
             $user->saveOrFail(); // Enregistrement dans la base de donnée
-            return response()->json($user, Response::HTTP_CREATED); // Retourne l'utilisateur créé sous forme JSON
+            $token = TokenService::generateToken($user);
+            return response()->json($token, Response::HTTP_CREATED); // Retourne le token d'authentification de l'utilisateur
         } catch (Throwable $e) { // L'enregistrement a échoué
             return response()->json("Le login ou l'adresse mail est déjà présent dans la base de données", Response::HTTP_UNAUTHORIZED);
         }
