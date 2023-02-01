@@ -9,18 +9,18 @@
     <template v-else>
       <el-menu-item index="/home">PIDLE</el-menu-item>
       <div class="flex-grow" />
-      <el-menu-item index="newLevel">Créer un niveau</el-menu-item>
-      <el-menu-item index="myLevels">Mes niveaux</el-menu-item>
-      <el-menu-item index="rules">Règles</el-menu-item>
+      <el-menu-item index="/newLevel">Créer un niveau</el-menu-item>
+      <el-menu-item index="/myLevels">Mes niveaux</el-menu-item>
+      <el-menu-item index="/rules">Règles</el-menu-item>
 
       <el-sub-menu index="1">
         <template #title>
           <el-icon><User /></el-icon>
         </template>
-        <el-menu-item index="profile">Mon Profil</el-menu-item>
-        <el-menu-item index="history">Historique</el-menu-item>
-        <el-menu-item index="favoris">Favoris</el-menu-item>
-        <el-menu-item index="logout">Déconnexion</el-menu-item>
+        <el-menu-item index="/profile">Mon Profil</el-menu-item>
+        <el-menu-item index="/history">Historique</el-menu-item>
+        <el-menu-item index="/favoris">Favoris</el-menu-item>
+        <el-menu-item index="/logout">Déconnexion</el-menu-item>
       </el-sub-menu>
     </template>
   </el-menu>
@@ -46,6 +46,12 @@ export default class MenuComponent extends Vue {
     return localStorage.getItem('token') != null
   }
 
+  mounted() {
+    if(!this.connected && !['/', '/login', '/register'].includes(location.pathname))
+      location.pathname = '/'
+    else if (this.connected && ['/', '/login', '/register'].includes(location.pathname))
+      location.pathname = '/home'
+  }
 
 }
 </script>

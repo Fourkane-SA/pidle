@@ -35,7 +35,10 @@ export default class LevelComponent extends Vue {
       }
     })).data
     if(!await this.ownerLevel()) {
-      const history: Game[] = (await axios.get('/games/byUserId/' + userId)).data
+      let history: Game[] = (await axios.get('/games/byUserId/' + userId)).data
+      history = history
+          .filter(game => game.userId === userId)
+          .filter(game => game.levelId === this.level.id)
       if(history.length > 0) {
         if(history[history.length - 1].completed) {
           this.level.finished = true
@@ -287,14 +290,16 @@ export default class LevelComponent extends Vue {
   }
 
   async colorLevel() {
-    this.game = (await axios.patch('/games/' + this.game.id, {
-      completed: true,
-      end: true
-    }, {
-      headers: {
-        'Authorization': localStorage.getItem('token')
-      }
-    })).data
+    if(!await this.ownerLevel()) {
+      this.game = (await axios.patch('/games/' + this.game.id, {
+        completed: true,
+        end: true
+      }, {
+        headers: {
+          'Authorization': localStorage.getItem('token')
+        }
+      })).data
+    }
     this.updateLevel(this.level)
     const pattern: [][] = JSON.parse(this.level.pattern)
     for(let i=0; i<this.level.size; i++) {
