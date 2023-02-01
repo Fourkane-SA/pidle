@@ -151,7 +151,7 @@ export default class RegisterView extends Vue {
         const data = {...this.user} // Initialisation des données de la requête avec les attributs de l'utilisateur
         const token = await (await axios.post('/users', data)).data // Requête API pour créer un nouvel utilisateur
         localStorage.setItem('token', token)
-        this.$router.push('/rules')
+        location.pathname = '/rules'
         //this.$router.push('/login') // Redirection vers la page de connexion
       }
     }
