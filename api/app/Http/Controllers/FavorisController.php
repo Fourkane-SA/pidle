@@ -9,11 +9,6 @@ use App\Services\TokenService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * 1. Compte les likes d'un niveau
- * 2. Ajouter / enlever un like d'un niveau
- * 3. Lister les likes d'un utilisateur
- */
 
 class FavorisController extends Controller {
 
@@ -25,13 +20,13 @@ class FavorisController extends Controller {
         return response()->json($favoris->count());
     }
 
-    public function update(int $idLevel, Request $request) {
-        $level = Level::find($idLevel);
-        if(!$level)
+    public function update(int $idLevel, Request $request) { // Met à jour le favoris du niveau après vérification du token
+        $level = Level::find($idLevel); // Recupère le niveau via son ID
+        if(!$level) // Si le niveau n'existe pas
             return response()->json("Ce niveau n'existe pas", Response::HTTP_NOT_FOUND);
-        $idUser = TokenService::getId($request);
-        $favoris = Favoris::where('levelId', $idLevel)->where('userId', $idUser)->first();
-        if(!$favoris) {
+        $idUser = TokenService::getId($request); // Recupère l'identifiant de l'utisateur ayant effectué la requête
+        $favoris = Favoris::where('levelId', $idLevel)->where('userId', $idUser)->first(); // Vérifie si le champ favoris est déjà présent dans la base de donnée
+        if(!$favoris) { // Si l'utilisateur n'a jamais mis ce niveau dans ses favoris
             $favoris = new Favoris();
             $favoris->isLiked = true;
             $favoris->userId = $idUser;
@@ -43,7 +38,7 @@ class FavorisController extends Controller {
         return response()->json($favoris);
     }
 
-    public function showByUser(int $idUser) {
+    public function showByUser(int $idUser) { // Retourne tous les niveaux que l'utilisateur a ajouté dans ses favoris
         $user = User::find($idUser);
         if(!$user)
             return response()->json("Cet utilisateur n'existe pas", Response::HTTP_NOT_FOUND);

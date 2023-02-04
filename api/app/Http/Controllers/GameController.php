@@ -10,11 +10,11 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class GameController extends Controller {
-    public function index() {
+    public function index() { // Retourne l'historique de l'ensemble des parties
         return response()->json(game::all());
     }
 
-    public function store(Request $request) {
+    public function store(Request $request) { // Crée une nouvelle partie
         $levelId = $request->input('levelId');
         if(!$levelId)
             return response()->json("Le champ levelId doit être renseigné", Response::HTTP_BAD_REQUEST);
@@ -32,14 +32,14 @@ class GameController extends Controller {
         return response()->json($game);
     }
 
-    public function show(int $id) {
+    public function show(int $id) { // Retourne une partie
         $game = game::find($id);
         if(!$game)
             return response()->json("Ce niveau n'existe pas", Response::HTTP_NOT_FOUND);
         return response()->json($game);
     }
 
-    public function showByUser(int $id) {
+    public function showByUser(int $id) { // Recupère l'historique des parties d'un utilisateur
         $user = User::find($id);
         if(!$user)
             return response()->json("Cet utilisateur n'existe pas", Response::HTTP_NOT_FOUND);
@@ -47,7 +47,7 @@ class GameController extends Controller {
         return response()->json($games);
     }
 
-    public function update(int $id, Request $request) {
+    public function update(int $id, Request $request) { // Met à jour une partie
         $game = game::find($id);
         if(!$game)
             return response()->json("Ce niveau n'existe pas", Response::HTTP_NOT_FOUND);

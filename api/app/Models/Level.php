@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Level extends Model {
@@ -12,7 +13,8 @@ class Level extends Model {
     public function user(): HasOne {
         return $this->hasOne(User::class);
     }
-    public function game() {
+    public function game(): BelongsTo
+    {
         return $this->belongsTo(game::class);
     }
 }

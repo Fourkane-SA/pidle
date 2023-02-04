@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Model {
 
@@ -11,11 +12,13 @@ class User extends Model {
     protected $hidden = ['password'];
 
 
-    public function level() {
+    public function level(): BelongsTo
+    {
         return $this->belongsTo(Level::class);
     }
 
-    public function game() {
+    public function game(): BelongsTo
+    {
         return $this->belongsTo(game::class);
     }
 }
