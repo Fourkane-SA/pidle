@@ -18,7 +18,7 @@ import axios from "@/plugins/axios";
 
 export default class MyLevelsView extends Vue {
   levels: Level[] = []
-  async mounted() {
+  async mounted() { // Requête l'API pour recupérer la liste des niveaux de l'utilisateur connecté
     const userId = (await axios.get('/token', {
       headers: {
         'Authorization': localStorage.getItem('token')

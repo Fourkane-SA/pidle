@@ -43,12 +43,12 @@ export default class EditProfileView extends Vue {
   birth: string = ''
   firstname: string = ''
   lastname: string = ''
-  listId = [0,1,2,3,4,5,6,7,8,9,10,11, 12, 13, 14, 15]
+  listId = [0,1,2,3,4,5,6,7,8,9,10,11, 12, 13, 14, 15] // Identifiants des photos
   idAvatar: number = 0
   loading: boolean = false
   user: User = new User()
 
-  async created() {
+  async created() { // Recupération de l'utilisateur connecté via son token
     const id = (await axios.get('/token',{
       headers: {
         'Authorization': localStorage.getItem('token')
@@ -61,7 +61,7 @@ export default class EditProfileView extends Vue {
     this.user.idAvatar = id
   }
 
-  async submit() {
+  async submit() { // Met à jour l'utilisateur en requettant l'API
     this.loading = true
     const {id, description, birth, firstname, lastname, idAvatar} = this.user
     await axios.patch('/users/' + id, {

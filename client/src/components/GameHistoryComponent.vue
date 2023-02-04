@@ -35,12 +35,12 @@ import {Prop} from "vue-property-decorator";
 })
 export default class GameHistoryComponent extends Vue {
 
-  @Prop({ required: true }) id!: number
+  @Prop({ required: true }) id!: number // Passage de l'id de la partie en paramètre du composant
   user: User = new User()
   level: Level = new Level()
   game: Game = new Game()
 
-  async mounted() {
+  async mounted() { // Requête l'API pour initialiser les variables
     this.game = (await axios.get('/games/' + this.id)).data
     this.level = (await axios.get('/levels/' + this.game.levelId)).data
     this.user = (await axios.get('/users/' + this.game.userId)).data
@@ -50,7 +50,7 @@ export default class GameHistoryComponent extends Vue {
     return this.game.completed ? "Niveau terminé" : "Non terminé"
   }
 
-  getTime() {
+  getTime() { // Recupère la durée de la partie
     const created = Date.parse(this.game.created_at)
     const finished = Date.parse(this.game.updated_at)
     const duration = finished - created

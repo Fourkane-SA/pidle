@@ -25,7 +25,7 @@ import axios from "@/plugins/axios";
 export default class FavorisView extends Vue {
   levels: Level[] = []
 
-  async mounted() {
+  async mounted() { // Initialise les différents niveaux
     const userId = (await axios.get('/token', {
       headers: {
         'Authorization': localStorage.getItem('token')

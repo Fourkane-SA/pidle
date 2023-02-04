@@ -19,7 +19,7 @@ import axios from "@/plugins/axios";
 export default class HistoryView extends Vue {
   history: Game[] = []
 
-  async mounted() {
+  async mounted() { // Initialise la liste des parties jouées par l'utilisateur connecté
     const idUser = (await axios.get('/token', {
       headers: {
         'Authorization': localStorage.getItem('token')

@@ -33,7 +33,7 @@ export default class LevelProfileComponent extends Vue {
   level: Level = new Level()
   count: number = 0
 
-  async created() {
+  async created() { // Initialise les valeurs à afficher
     this.level = (await axios.get('/levels/' + this.id)).data
     const games: Game[] = (await axios.get('/games')).data
     this.count = games.filter(game => game.levelId === this.level.id).length

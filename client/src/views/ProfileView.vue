@@ -42,7 +42,7 @@ export default class ProfileView extends Vue {
   levels: Level[] = []
   gameStarted: number = 0
   gameFinished: number = 0
-  async created() {
+  async created() { // Requête l'API pour initialiser les données à afficher
     const id = (await axios.get('/token',{
       headers: {
         'Authorization': localStorage.getItem('token')

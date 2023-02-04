@@ -40,18 +40,18 @@ export default class MyLevelComponent extends Vue {
   level: Level = new Level()
   @Prop({ required: true }) id!: number
 
-  async mounted() {
+  async mounted() { // Initialise les informations à afficher
     this.level = (await axios.get('/levels/' + this.id)).data
     if(this.level.description.length > 50)
       this.level.description = this.level.description.substring(0, 50) + '...'
 
   }
 
-  editLevel() {
+  editLevel() { // Redirige vers la page d'édition de niveau
     this.$router.push('editLevel/' + this.id)
   }
 
-  async deleteLevel() {
+  async deleteLevel() { // Supprime le niveau
     await axios.delete('/levels/' + this.id, {
       headers: {
         'Authorization': localStorage.getItem('token')

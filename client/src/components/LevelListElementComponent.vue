@@ -34,13 +34,13 @@ import { Game } from "@/models/Game";
     LevelPreviewComponent
   },
 })
-export default class LevelListElementComponent extends Vue {
+export default class LevelListElementComponent extends Vue { // Composant permettant l'affichage d'un niveau dans l'écran d'accueil
   @Prop({ required: true }) id!: number
 
   level: Level = new Level()
   user: User = new User()
   count: number = 0
-  async created() {
+  async created() { // Initialisation des données à afficher
     this.level = (await axios.get('/levels/' + this.id)).data
     this.user = (await axios.get('/users/' + this.level.userId)).data
     let games: Game[] = (await axios.get('/games')).data

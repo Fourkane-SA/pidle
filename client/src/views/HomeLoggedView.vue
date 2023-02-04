@@ -29,7 +29,7 @@ export default class HomeLoggedView extends Vue {
   levels: Level[] = []
   levelsOrder: Level[] = []
   userId: number = -1
-  async mounted() {
+  async mounted() { // Initialise la liste de niveaux jouable par l'utilisateur connecté
     this.userId = (await axios.get('/token', {
       headers: {
         'Authorization': localStorage.getItem('token')
@@ -40,7 +40,7 @@ export default class HomeLoggedView extends Vue {
   }
 
 
-  async orderByDate() {
+  async orderByDate() { // Tri les niveaux du plus recent au plus ancien
     document.getElementById('new')!.className = "selected"
     document.getElementById('mostPlayed')!.className = "unselected"
     this.levelsOrder = this.levels
@@ -50,7 +50,7 @@ export default class HomeLoggedView extends Vue {
         .sort((a, b) => b.id - a.id )
   }
 
-  async orderByPlayed() {
+  async orderByPlayed() { // Tri les niveaux du plus joué au moins joué
     document.getElementById('new')!.className = "unselected"
     document.getElementById('mostPlayed')!.className = "selected"
     const games: Game[] = (await axios.get('/games')).data

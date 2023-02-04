@@ -41,7 +41,7 @@ export default class LoginView extends Vue {
       {min: 6, message: 'Le mot de passe doit contenir au moins 6 caractères', trigger: 'blur'}, // Vérifie que sa longueur est d'au moins 6 caractères
     ],
   })
-  async login(form: FormInstance) {
+  async login(form: FormInstance) { // Requête l'API pour se connecter si toutes les règles du formulaire sont valides
     this.error = false
     this.errorMessage = ""
     if(await form.validate()) {
@@ -52,9 +52,7 @@ export default class LoginView extends Vue {
           password: password
         })).data
         localStorage.setItem('token', token)
-        //location.pathname = '/home'
         location.pathname = '/home'
-        //this.$router.push('/home')
       } catch (e : any) {
         this.error = true
         this.errorMessage = e.response.data

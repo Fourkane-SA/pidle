@@ -1,17 +1,17 @@
 <template>
   <div class="form" v-if="!confirm">
-    <el-form label-position="top">
-      <el-form-item label="Titre">
-        <el-input v-model="level.title" />
+    <el-form label-position="top" :rules="rules" ref="formRef" :model="modelForm">
+      <el-form-item label="Titre" prop="title">
+        <el-input v-model="modelForm.title" />
       </el-form-item>
-      <el-form-item label="Description">
-        <el-input type="textarea" v-model="level.description" />
+      <el-form-item label="Description" prop="description">
+        <el-input type="textarea" v-model="modelForm.description" />
       </el-form-item>
       <el-form-item label="Dimensions">
         <el-input-number :min="5" :max="15" :value-on-clear="5" v-model="level.size"/>
       </el-form-item>
     </el-form>
-    <el-button @click="initCanvas">Créer</el-button>
+    <el-button @click="verifieForm(formRef)">Créer</el-button>
   </div>
   <div class="konva" ref="konva" />
   <div v-if="confirm" style="margin: 1em">
@@ -28,9 +28,10 @@ import Konva from 'konva'
 import Layer = Konva.Layer;
 import Rect = Konva.Rect;
 import { Text } from "konva/lib/shapes/Text";
-import {ElMessage} from "element-plus";
+import {ElMessage, FormInstance, FormRules} from "element-plus";
 import {Level} from "@/models/Level";
 import axios from "@/plugins/axios";
+import {reactive, ref} from "vue";
 
 export default class LevelEditorComponent extends Vue {
 
@@ -49,23 +50,47 @@ export default class LevelEditorComponent extends Vue {
     size: 5
   })
 
+  rules = reactive<FormRules>({
+    title: [ // Règles sur le champ login
+      {required: true, message: 'Entrez un titre', trigger: 'blur'}, // Vérifie que le champ n'est pas vide
+      {min: 6, message: "Le nom d'utilisateur doit contenir au moins 6 caractères", trigger: 'blur'}, // Vérifie que sa longueur est d'au moins 6 caractères
+    ],
+    description: [ // Règles sur le mot de passe
+      {required: true, message: 'Entrez une description', trigger: 'blur'}, // Vérifie que le champ n'est pas vide
+      {min: 6, message: 'La description doit contenir au moins 6 caractères', trigger: 'blur'}, // Vérifie que sa longueur est d'au moins 6 caractères
+    ],
+  })
+  formRef = ref<FormInstance>()
+  modelForm = reactive({
+    title: '',
+    description: ''
+  })
 
-  initCanvas() {
+
+  async verifieForm(form: FormInstance) { // Permet de vérifier la validité du formulaire
+    if(await form.validate()) {
+      this.level.title = this.modelForm.title
+      this.level.description = this.modelForm.description
+      this.initCanvas()
+    }
+  }
+
+  initCanvas() { // Initialise le canevas
     this.confirm = true
     this.canvas = new Konva.Stage({
       container: this.$refs.konva as HTMLDivElement,
       width: 800,
       height: 600
     })
-    this.initSelectedColor()
-    this.initGrid()
-    this.initCounter()
+    this.initSelectedColor() // Initialise la selection de couleurs
+    this.initGrid() // Initialise la grille
+    this.initCounter() // Initialise l'affichage des indices
     this.canvas.add(this.layer)
   }
 
-  initSelectedColor() {
+  initSelectedColor() { // Initialise la selection de couleurs
     for(let i=0; i<this.color.length/2; i++) {
-      const rect1 = new Konva.Rect({
+      const rect1 = new Konva.Rect({ // Affichage d'un selecteur de couleur
         x: 20,
         y: i*40+20,
         width: 40,
@@ -73,7 +98,7 @@ export default class LevelEditorComponent extends Vue {
         fill: this.color[i],
         stroke: 'black'
       })
-      rect1.on('click', () => {
+      rect1.on('click', () => { // Mise à jour de la couleur selectionnée au clic
         this.selectedColorRect!.fill(this.color[i])
       })
       this.layer.add(rect1)
@@ -91,7 +116,7 @@ export default class LevelEditorComponent extends Vue {
       this.layer.add(rect2)
     }
 
-    this.selectedColorRect = new Konva.Rect({
+    this.selectedColorRect = new Konva.Rect({ // Initialise la couleur selectionnée à noire
       x: 40,
       y: 520,
       width: 40,
@@ -108,7 +133,7 @@ export default class LevelEditorComponent extends Vue {
     const scale = 400/this.level.size // Echelle d'une case de la grille
     for(let i=0; i<this.level.size; i++) {
       this.grid[i] = []
-      for(let j=0; j<this.level.size; j++) {
+      for(let j=0; j<this.level.size; j++) { // Initialisation de la grille
         this.grid[i][j] = 12
         const rect = new Konva.Rect({
           x: 250 + i*scale,
@@ -132,7 +157,7 @@ export default class LevelEditorComponent extends Vue {
 
   initCounter() {
     const scale = 400/this.level.size // Echelle d'une case de la grille
-    for(let i=0; i<this.level.size; i++) {
+    for(let i=0; i<this.level.size; i++) { // Initialise les patternes de chaques lignes et colonnes à zéro
       const countY = new Konva.Text({
         x: 250 + i*scale + scale/2,
         y: 120,
@@ -164,7 +189,7 @@ export default class LevelEditorComponent extends Vue {
     }
   }
 
-  updateCounterX(column: number) {
+  updateCounterX(column: number) { // Mise à jour du patterne d'une colonne
     const values: number[] = []
     this.grid.forEach(line => values.push(line[column]))
     const res = []
@@ -185,7 +210,7 @@ export default class LevelEditorComponent extends Vue {
     this.counterX[column].text(text)
     this.counterX[column].offsetX(this.counterX[column].width())
   }
-  updateCounterY(line: number) {
+  updateCounterY(line: number) { // Mise à jour du patterne d'une ligne
     const values = this.grid[line]
     const res = []
     let counter = 0
@@ -240,7 +265,6 @@ export default class LevelEditorComponent extends Vue {
   margin auto
   width fit-content
   border-radius 1em
-  //background grey
 
 .form
   width 500px

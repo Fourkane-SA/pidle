@@ -7,7 +7,7 @@
 import {Vue} from "vue-class-component";
 
 export default class LogoutView extends Vue {
-  mounted() {
+  mounted() { // Supprime le token du localstorage et redirige vers l'accueil
     localStorage.clear()
     location.pathname = '/'
   }

@@ -12,7 +12,7 @@ import {Emit} from "vue-property-decorator";
 import {Game} from "@/models/Game";
 
 
-export default class LevelComponent extends Vue {
+export default class LevelComponent extends Vue { // Composant permettant de réaliser une partie
   @Emit('update:level')
   updateLevel(level: Level) {
     return level
@@ -34,19 +34,19 @@ export default class LevelComponent extends Vue {
         'Authorization': localStorage.getItem('token')
       }
     })).data
-    if(!await this.ownerLevel()) {
-      let history: Game[] = (await axios.get('/games/byUserId/' + userId)).data
+    if(!await this.ownerLevel()) { // Si la personne qui joue à ce niveau n'est pas celui qui l'a créé
+      let history: Game[] = (await axios.get('/games/byUserId/' + userId)).data // Recupère l'historique des parties créées par l'utilisateur
       history = history
           .filter(game => game.userId === userId)
           .filter(game => game.levelId === this.level.id)
-      if(history.length > 0) {
-        if(history[history.length - 1].completed) {
-          this.level.finished = true
+      if(history.length > 0) { // Vérifie si l'utilisateur a déjà réalisé ce niveau
+        if(history[history.length - 1].completed) { // Si dans sa derniere tentative, il a terminé ce niveau
+          this.level.finished = true // Le niveau est terminé
           this.game = history[history.length - 1]
         }
       }
-      if(!this.game.completed) {
-        this.game = (await axios.post('games', {
+      if(!this.game.completed) { // Si l'utilisateur n'a pas déjà terminé ce niveau
+        this.game = (await axios.post('games', { // Création d'une nouvelle partie
           'levelId': this.level.id
         }, {
           headers: {
@@ -55,9 +55,9 @@ export default class LevelComponent extends Vue {
         })).data
       }
     }
-    this.initLevel()
+    this.initLevel() // Initialise le niveau
   }
-  async ownerLevel() {
+  async ownerLevel() { // Vérifie si l'utilisateur connecté est le propriétaire du niveau
     const playerId = (await axios.get('/token', {
       headers: {
         'Authorization': localStorage.getItem('token')
@@ -68,23 +68,23 @@ export default class LevelComponent extends Vue {
     return playerId === this.level.userId
   }
   initLevel() {
-    this.canvas = new Konva.Stage({
+    this.canvas = new Konva.Stage({ // Création du canva
       container: this.$refs.konva as HTMLDivElement,
       width: 600,
       height: 600
     })
-    this.initGrid()
-    this.initCounter()
-    this.initLife()
-    this.canvas.add(this.layer)
+    this.initGrid() // Initialise la grille
+    this.initCounter() // Initialise les indices sur les lignes et les colonnes
+    this.initLife() // Initialise le nombre de vies
+    this.canvas.add(this.layer) // Ajout du layer dans le canevas
   }
 
-  initGrid() {
-    const scale = 500 / this.level.size
+  initGrid() { // Permet d'initialiser la grille
+    const scale = 500 / this.level.size // Echelle d'une case
     for(let i=0; i<this.level.size; i++) {
       this.grid[i] = []
       for(let j=0; j<this.level.size; j++) {
-        this.grid[i][j] = new Konva.Rect({
+        this.grid[i][j] = new Konva.Rect({ // Création d'une case de grille
           x: 100 + i * scale,
           y: 100 + j * scale,
           width: scale,
@@ -92,32 +92,32 @@ export default class LevelComponent extends Vue {
           stroke: 'black',
           fill: 'white'
         })
-        this.grid[i][j].on('click', () => {
-          if(!this.level.finished) {
-            if(this.grid[i][j].fill() === 'white') {
-              this.grid[i][j].fill('black')
-              this.verifyColumn(i)
-              this.verifyLine(j)
-              this.verifyValid(i, j)
-              this.level.finished = this.verifyComplete()
-              if(this.level.finished) {
-                this.colorLevel()
+        this.grid[i][j].on('click', () => { // Gestion d'evenement au click sur la case
+          if(!this.level.finished) { // Si le niveau n'est pas terminé
+            if(this.grid[i][j].fill() === 'white') { // Si la case n'a pas déjà été cliqué
+              this.grid[i][j].fill('black') // Colore la case en noir
+              this.verifyColumn(i) // Si la colonne est correcte, colore les cases blanches en gris
+              this.verifyLine(j) // Si la ligne est correcte, colore les cases blanches en gris
+              this.verifyValid(i, j) // Si la case cliqué par l'utilisateur est incorrecte, colorie en rouge
+              this.level.finished = this.verifyComplete() // Vérifie si le niveau est correct
+              if(this.level.finished) { // Si le niveau est terminé
+                this.colorLevel() // Affiche l'imag complète avec ses couleurs
               }
             }
           }
         })
-        this.layer.add(this.grid[i][j])
+        this.layer.add(this.grid[i][j]) // Ajout de la grille dans le layer
       }
     }
-    for(let i=0; i<this.level.size; i++) {
+    for(let i=0; i<this.level.size; i++) { // Vérifie les lignes et les colonnes complètes une fois que la grille a été initialisée
       this.verifyLine(i)
       this.verifyColumn(i)
     }
-    if(this.level.finished)
+    if(this.level.finished) // Cette condition est vraie si l'utilisateur a déjà terminé ce niveau
       this.colorLevel()
   }
 
-  initCounter() {
+  initCounter() { // Initialise les indices pour chaque lignes et chaque colonne
     const scale = 500 / this.level.size
     for(let i=0; i<this.level.size; i++) {
       const countX = new Konva.Text({
@@ -146,7 +146,7 @@ export default class LevelComponent extends Vue {
       this.layer.add(this.counterY[i])
     }
   }
-  initCounterX(column: number) {
+  initCounterX(column: number) { // Retourne le patterne à afficher sur une colonne
     const values: number[] = []
     const pattern: [] = JSON.parse(this.level.pattern)
     pattern.forEach(line => values.push(line[column]))
@@ -168,7 +168,7 @@ export default class LevelComponent extends Vue {
     return text
   }
 
-  initCounterY(line: number) {
+  initCounterY(line: number) { // Retourne le patterne à afficher sur une ligne
     const pattern: [] = JSON.parse(this.level.pattern)
     const values: [] = pattern[line]
     const res = []
@@ -189,7 +189,7 @@ export default class LevelComponent extends Vue {
     return text
   }
 
-  initLife() {
+  initLife() { // Initialise l'affichage du nombre de vie
     for(let i=0; i<this.life; i++) {
       const rect = new Konva.Rect({
         x: 5+i*35,
@@ -204,21 +204,21 @@ export default class LevelComponent extends Vue {
     }
   }
 
-  verifyColumn(column: number) {
+  verifyColumn(column: number) { // Compare la colonne en cours avec celle du patterne du niveau
     const pattern: [][] = JSON.parse(this.level.pattern)
     const columnList = this.grid[column]
             .map(rect => rect.fill())
             .map(val => val === 'white'? 1 : 0)
     const columnPattern = pattern[column].map(val => val === 0 ? 0 : 1)
-    if (JSON.stringify(columnList) === JSON.stringify(columnPattern)) {
+    if (JSON.stringify(columnList) === JSON.stringify(columnPattern)) { // Si les cases noires de la colonne renseignée par l'utilisateur correspond à celle du niveau
       for(let i=0; i<this.level.size; i++) {
         if(columnList[i] === 1)
-          this.grid[column][i].fill('grey')
+          this.grid[column][i].fill('grey') // Remplace les cases blanches en gris pour indiquer que la colonne est correcte
       }
     }
   }
 
-  verifyLine(line: number) {
+  verifyLine(line: number) { // Compare la ligne en cours avec celle du patterne du niveau
     const pattern: [][] = JSON.parse(this.level.pattern)
     const lineListActual = []
     const lineListPattern = []
@@ -228,19 +228,19 @@ export default class LevelComponent extends Vue {
       const patternValue = pattern[i][line] === 0 ? 0 : 1
       lineListPattern.push(patternValue)
     }
-    if(JSON.stringify(lineListPattern) === JSON.stringify(lineListActual))
+    if(JSON.stringify(lineListPattern) === JSON.stringify(lineListActual)) // Si les cases noires de la ligne renseignée par l'utilisateur correspond à celle du niveau
       for(let i=0; i<this.level.size; i++) {
         if(lineListActual[i] === 1)
-          this.grid[i][line].fill('grey')
+          this.grid[i][line].fill('grey') // Remplace les cases blanches en gris pour indiquer que la ligne est correcte
       }
   }
 
-  async verifyValid(i: number, j: number) {
+  async verifyValid(i: number, j: number) { // Vérifie si la case cliqué est valide
     const pattern: [][] = JSON.parse(this.level.pattern)
-    if(pattern[i][j] !== 0) {
-      this.grid[i][j].fill('red')
-      this.life--;
-      this.game = (await axios.patch('/games/' + this.game.id, {
+    if(pattern[i][j] !== 0) { // Si la case cliquée n'est pas correcte
+      this.grid[i][j].fill('red') // Colorie la case en rouge
+      this.life--; // Enleve une vie
+      this.game = (await axios.patch('/games/' + this.game.id, { // Met à jour le nombre de vie dans la partie
         life: this.life
       }, {
         headers: {
@@ -248,12 +248,12 @@ export default class LevelComponent extends Vue {
         }
       })).data
       this.lifeRect[this.life].fill('')
-      if(this.life === 0) {
-        this.grid.forEach(column => column.forEach(rect => rect.destroy()))
+      if(this.life === 0) { // Si le nombre de vies est égale à 0
+        this.grid.forEach(column => column.forEach(rect => rect.destroy())) // Suppression de tous les elements dessinées
         this.lifeRect.forEach(rect => rect.destroy())
         this.counterX.forEach(text => text.destroy())
         this.counterY.forEach(text => text.destroy())
-        this.game = (await axios.patch('games/' + this.game.id, {
+        this.game = (await axios.patch('games/' + this.game.id, { // Mise à jour de l'état de la partie
           completed: false,
           end: true
         }, {
@@ -261,7 +261,7 @@ export default class LevelComponent extends Vue {
             'Authorization': localStorage.getItem('token')
           }
         })).data
-        const text = new Konva.Text({
+        const text = new Konva.Text({ // Affichage d'un texte informant que la partie est terminée
           text: "Vous avez perdu!",
           x: 300,
           y: 300,
@@ -270,12 +270,12 @@ export default class LevelComponent extends Vue {
         })
         text.offsetX(text.width()/2)
         text.offsetY(text.height()/2)
-        this.layer.add(text)
+        this.layer.add(text) // Ajoutb du texte dans le layer
       }
     }
   }
 
-  verifyComplete() {
+  verifyComplete() { // Vérifie si le niveau est finie
     let result: number[][] = []
     const pattern: [][] = JSON.parse(this.level.pattern)
     const actual: number[][] = []
@@ -283,14 +283,14 @@ export default class LevelComponent extends Vue {
       result[i] = (pattern[i].map(val => val === 0 ? 0 : 1))
       actual[i] = []
       for(let j=0; j<this.level.size; j++) {
-        actual[i][j] = this.grid[i][j].fill() === 'black' ? 0 : 1 // this.color.findIndex((elem) => elem == this.grid[i][j].fill())
+        actual[i][j] = this.grid[i][j].fill() === 'black' ? 0 : 1
       }
     }
     return JSON.stringify(result) === JSON.stringify(actual)
   }
 
-  async colorLevel() {
-    if(!await this.ownerLevel()) {
+  async colorLevel() { // Colorie le niveau
+    if(!await this.ownerLevel()) { // Mis à jour du status de la partie
       this.game = (await axios.patch('/games/' + this.game.id, {
         completed: true,
         end: true
@@ -303,10 +303,10 @@ export default class LevelComponent extends Vue {
     this.updateLevel(this.level)
     const pattern: [][] = JSON.parse(this.level.pattern)
     for(let i=0; i<this.level.size; i++) {
-      for(let j=0; j<this.level.size; j++) {
+      for(let j=0; j<this.level.size; j++) { // Colorie une case de niveau
         this.grid[i][j].fill(this.color[pattern[i][j]])
         this.grid[i][j].stroke(this.grid[i][j].fill())
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await new Promise(resolve => setTimeout(resolve, 50)) // Attente de 50 ms avant de colorier la prochaine case
       }
     }
   }

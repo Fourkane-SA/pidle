@@ -36,7 +36,7 @@ export default class EditLevelView extends Vue {
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
   }
 
-  async saveLevel() {
+  async saveLevel() { // Requête l'API pour enregistrer le niveau
     this.loadingSave = true
     await axios.patch('/levels/' + this.level.id, {
       description: this.level.description,
@@ -48,7 +48,7 @@ export default class EditLevelView extends Vue {
     })
     this.loadingSave = false
   }
-  async publishLevel() {
+  async publishLevel() { // Requête l'API pour publier le niveau
     this.loadingPublish = true
     this.level = (await axios.patch('/levels/' + this.level.id, {
       published: true
@@ -60,7 +60,7 @@ export default class EditLevelView extends Vue {
     this.loadingPublish = false
   }
 
-  async privateLevel() {
+  async privateLevel() { // Requête l'API pour mettre le niveau en privé
     this.loadingPublish = true
     this.level =  (await axios.patch('/levels/' + this.level.id, {
       published: false
@@ -71,7 +71,7 @@ export default class EditLevelView extends Vue {
     })).data
     this.loadingPublish = false
   }
-  async deleteLevel() {
+  async deleteLevel() { // Requête l'API pour supprimer le niveau
     await axios.delete('/levels/' + this.level.id, {
       headers: {
         'Authorization': localStorage.getItem('token')
@@ -80,7 +80,7 @@ export default class EditLevelView extends Vue {
     this.$router.push('/myLevels')
   }
 
-  setLevelFinished(level: Level) {
+  setLevelFinished(level: Level) { // Est appelé quand la partie est terminée.
     this.level = level
     if(this.level.finished)
       this.saveLevel()

@@ -9,7 +9,7 @@
     </div>
     <div class="titleDescription">
       <h2>{{ level.title }}</h2>
-      <p>{{ level.description }}</p> <!--Ajouter un bouton favoris quelque part-->
+      <p>{{ level.description }}</p>
     </div>
     <div class="favoris">
       <Star style="width: 40px" v-if="!favoris" @click="clickFavoris"/>
@@ -41,7 +41,7 @@ export default class LevelView extends Vue {
   level: Level = new Level()
   user: User = new User()
   countLikes: number = 0
-  async mounted() {
+  async mounted() { // Initialise les différentes variables en requetant l'API
     this.level = (await axios.get('/levels/' + this.$route.params.id)).data
     this.user = (await axios.get('/users/' + this.level.userId)).data
     const idUser = (await axios.get('/token', {
@@ -56,7 +56,7 @@ export default class LevelView extends Vue {
     }
     this.countLikes = (await axios.get('/favoris/count/' + this.level.id)).data
   }
-  async clickFavoris() {
+  async clickFavoris() { // Ajoute / supprime le niveau des favoris de l'utilisateur connecté
     const fav: Favoris = (await axios.patch('/favoris/' + this.level.id,null, {
       headers: {
         'Authorization': localStorage.getItem('token')
